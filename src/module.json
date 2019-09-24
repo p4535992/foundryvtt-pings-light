@@ -1,0 +1,23 @@
+{
+	"name": "pings",
+	"title": "Pings",
+	"description": "Allows pinging on the map",
+	"version": "1.0.0",
+	"author": "Azzurite",
+	"scripts": [
+		"settings.js",
+		"pings.js"
+	],
+	"styles": [],
+	"packs": [],
+	"languages": [
+		{
+			"lang": "en",
+			"path": "languages/en.json"
+		}
+	],
+	"socket": true,
+	"manifest": "https://gitlab.com/foundry-azzurite/pings/raw/master/src/module.json",
+	"download": "https://gitlab.com/foundry-azzurite/pings/raw/master/dist/pings.zip",
+	"url": "https://gitlab.com/foundry-azzurite/pings"
+}
