@@ -8,7 +8,6 @@
 		}
 
 		static _emit(...args) {
-			console.log(Net.SOCKET_NAME);
 			game.socket.emit(Net.SOCKET_NAME, ...args)
 		}
 
@@ -22,13 +21,11 @@
 		}
 
 		static onPingReceived(func) {
-			console.log(Net.SOCKET_NAME);
 			game.socket.on(Net.SOCKET_NAME, (data) => {
 				if (canvas.scene._id !== data.sceneId) {
 					return;
 				}
 
-				console.log(data);
 				func(data.senderId, data.position, data.moveToPing);
 			});
 		}
