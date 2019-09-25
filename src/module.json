@@ -3,8 +3,9 @@
 	"title": "Pings",
 	"description": "Allows pinging on the map",
 	"version": "1.0.0",
-	"author": "Azzurite",
+	"author": "AzzuriteTV#2004",
 	"scripts": [
+		"settings-extender.js",
 		"settings.js",
 		"pings.js"
 	],
