@@ -1,9 +1,9 @@
 /**
- * window.AzzuriteTV.PingsSettings is guaranteed to be initialized after Hooks->init
+ * window.Azzu.PingsSettings is guaranteed to be initialized after Hooks->init
  */
 (() => {
-	window.AzzuriteTV = window.AzzuriteTV || {};
-	const Settings = window.AzzuriteTV.PingsSettings = window.AzzuriteTV.PingsSettings || function PingsSettings(){};
+	window.Azzu = window.Azzu || {};
+	const Settings = window.Azzu.PingsSettings = window.Azzu.PingsSettings || function PingsSettings(){};
 
 	Hooks.once('init', () => {
 		registerPingsSettings();
@@ -12,7 +12,7 @@
 	// Definitions
 
 	function registerPingsSettings() {
-		const extraTypes = window.AzzuriteTV.SettingsTypes;
+		const extraTypes = window.Azzu.SettingsTypes;
 
 		register('mouseButton', {
 			name: game.i18n.localize('PINGS.mouseButton.title'),
@@ -116,7 +116,7 @@
 		const get = () => game.settings.get('pings', key);
 		const set = (val) => game.settings.set('pings', key, val);
 		let getset;
-		if (type.parse && Object.values(window.AzzuriteTV.SettingsTypes).includes(type)) {
+		if (type.parse && Object.values(window.Azzu.SettingsTypes).includes(type)) {
 			getset = {
 				get: () => type.parse(get()),
 				set: (val) => set(type.format(val))

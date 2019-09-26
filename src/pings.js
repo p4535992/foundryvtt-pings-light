@@ -1,6 +1,6 @@
 (() => {
-	window.AzzuriteTV = window.AzzuriteTV || {};
-	const Settings = window.AzzuriteTV.PingsSettings = window.AzzuriteTV.PingsSettings || function(){};
+	window.Azzu = window.Azzu || {};
+	const Settings = window.Azzu.PingsSettings = window.Azzu.PingsSettings || function(){};
 
 	class Net {
 		static get SOCKET_NAME() {
@@ -133,11 +133,6 @@
 			if (!shouldPingMove && !shouldPingNoMove) return;
 
 			this._triggerPing(shouldPingMove);
-		}
-
-		_isKey(e, keyOption) {
-			const option = this.options[keyOption];
-			return e.location === option.location && e.key === option.key;
 		}
 
 		_triggerPing(moveToPing) {

@@ -1,20 +1,20 @@
 /**
- * window.AzzuriteTV.SettingsTypes is guaranteed to be initialized on document.ready
- * window.AzzuriteTV.ExtendedSettingsConfig is guaranteed to be initialized after Hooks->ready
+ * window.Azzu.SettingsTypes is guaranteed to be initialized on document.ready
+ * window.Azzu.ExtendedSettingsConfig is guaranteed to be initialized after Hooks->ready
  */
 (() =>{
-	window.AzzuriteTV = window.AzzuriteTV || {};
+	window.Azzu = window.Azzu || {};
 	registerSettingsTypes();
 	extendSettingsWindow();
 
 	// Definitions
 
 	function registerSettingsTypes() {
-		if (window.AzzuriteTV.SettingsTypes) {
+		if (window.Azzu.SettingsTypes) {
 			return;
 		}
 
-		window.AzzuriteTV.SettingsTypes = createExtraInputTypes();
+		window.Azzu.SettingsTypes = createExtraInputTypes();
 	}
 
 	function createExtraInputTypes() {
@@ -178,11 +178,11 @@
 
 	function extendSettingsWindow() {
 		Hooks.once('ready', () => {
-			if (window.AzzuriteTV.ExtendedSettingsConfig) {
+			if (window.Azzu.ExtendedSettingsConfig) {
 				return;
 			}
 
-			window.AzzuriteTV.ExtendedSettingsConfig = ExtendedSettingsConfig;
+			window.Azzu.ExtendedSettingsConfig = ExtendedSettingsConfig;
 			game.settings._sheet = new ExtendedSettingsConfig(game.settings.settings);
 		});
 	}
@@ -203,7 +203,7 @@
 		}
 
 		activateListeners($html) {
-			let extraTypes = window.AzzuriteTV.SettingsTypes;
+			let extraTypes = window.Azzu.SettingsTypes;
 			// before super.activateListeners as FormApplication.activateListeners
 			// initialises FilePickers
 			extraTypes.FilePickerImage.addButtons($html);
