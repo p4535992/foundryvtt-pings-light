@@ -18,13 +18,13 @@
 			name: game.i18n.localize('PINGS.mouseButton.title'),
 			hint: game.i18n.localize('PINGS.mouseButton.hint'),
 			default: 'LeftClick',
-			type: extraTypes.MouseButtonSelector
+			type: extraTypes.MouseButtonBinding
 		});
 		register('mouseButtonMove', {
 			name: game.i18n.localize('PINGS.mouseButtonMove.title'),
 			hint: game.i18n.localize('PINGS.mouseButtonMove.hint'),
 			default: 'Shift + LeftClick',
-			type: extraTypes.MouseButtonSelector
+			type: extraTypes.MouseButtonBinding
 		});
 		register('mouseButtonDuration', {
 			name: game.i18n.localize('PINGS.mouseButtonDuration.title'),
@@ -36,13 +36,13 @@
 			name: game.i18n.localize('PINGS.key.title'),
 			hint: game.i18n.localize('PINGS.key.hint'),
 			default: '',
-			type: extraTypes.KeySelector
+			type: extraTypes.KeyBinding
 		});
 		register('keyMove', {
 			name: game.i18n.localize('PINGS.keyMove.title'),
 			hint: game.i18n.localize('PINGS.keyMove.hint'),
 			default: '',
-			type: extraTypes.KeySelector
+			type: extraTypes.KeyBinding
 		});
 		register('showName', {
 			name: game.i18n.localize('PINGS.showName.title'),

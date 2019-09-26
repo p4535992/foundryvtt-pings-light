@@ -35,16 +35,11 @@
 		return Math.abs(p1.x - p2.x) <= px && Math.abs(p1.y - p2.y) <= px;
 	}
 
-	function modifiersEqual(e, modifiers) {
-		const MODIFIERS = ['ctrlKey', 'shiftKey', 'metaKey', 'altKey'];
-		return MODIFIERS.reduce((modifiersCorrect, mod) => {
-			return modifiersCorrect && (e[mod] === !!modifiers[mod]);
-		}, true);
-	}
-
-	function isPressed(e, optionProp, keyProp) {
+	function isPressed(e, optionProp, bindingType) {
+		const types = window.Azzu.SettingsTypes;
+		const type = bindingType === 'mouse' ? types.MouseButtonBinding : types.KeyBinding;
 		const option = Settings[optionProp];
-		return modifiersEqual(e, option) && e[keyProp] === option[keyProp];
+		return type.eventIsForBinding(e, option);
 	}
 
 	class PingsLayer extends CanvasLayer {
@@ -87,9 +82,9 @@
 		}
 
 		_onMouseDown(e) {
-			const keyProp = 'button';
-			const shouldPingMove = isPressed(e, 'mouseButtonMove', keyProp);
-			const shouldPingNoMove = isPressed(e, 'mouseButton', keyProp);
+			const bindingType = 'mouse';
+			const shouldPingMove = isPressed(e, 'mouseButtonMove', bindingType);
+			const shouldPingNoMove = isPressed(e, 'mouseButton', bindingType);
 			if (!shouldPingMove && !shouldPingNoMove) return;
 
 			this._mouseDownStart = this._getMousePos();
@@ -103,7 +98,7 @@
 
 		_onMouseUp(e) {
 			if (this._mouseDownTimeout === undefined) return;
-			if (!isPressed(e, this._mouseDownOption, 'button')) return;
+			if (!isPressed(e, this._mouseDownOption, 'mouse')) return;
 
 			clearTimeout(this._mouseDownTimeout);
 			this._mouseDownTimeout = undefined;
@@ -127,9 +122,9 @@
 		}
 
 		_onKeyDown(e) {
-			const keyProp = 'key';
-			const shouldPingMove = isPressed(e, 'keyMove', keyProp);
-			const shouldPingNoMove = isPressed(e, 'key', keyProp);
+			const bindingType = 'keyboard';
+			const shouldPingMove = isPressed(e, 'keyMove', bindingType);
+			const shouldPingNoMove = isPressed(e, 'key', bindingType);
 			if (!shouldPingMove && !shouldPingNoMove) return;
 
 			this._triggerPing(shouldPingMove);
