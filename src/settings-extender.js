@@ -1,8 +1,10 @@
 /**
+ * settings-extender version 1.0.1
+ *
  * window.Azzu.SettingsTypes is guaranteed to be initialized on document.ready
  * window.Azzu.ExtendedSettingsConfig is guaranteed to be initialized after Hooks->ready
  */
-(() =>{
+(() => {
 	window.Azzu = window.Azzu || {};
 	registerSettingsTypes();
 	extendSettingsWindow();
@@ -24,6 +26,7 @@
 			metaKey: 'Meta + ',
 			altKey: 'Alt + '
 		};
+
 		function parseModifiers(val, keyProp) {
 			return Object.entries(MODIFIERS).reduce((obj, [prop, val]) => {
 				if (obj[keyProp].includes(val)) {
@@ -56,10 +59,12 @@
 			return modifiersEqual(e, binding) && e[keyProp] === binding[keyProp];
 		}
 
+		const IGNORED_KEYS = ['Shift', 'Alt', 'Control', 'Meta', 'F5'];
+
 		function MouseButtonBinding(val) {
 			return val;
 		}
-		MouseButtonBinding._EVENT_TYPE = 'mousedown';
+
 		MouseButtonBinding._MOUSE_BUTTONS = new Proxy({
 			0: 'LeftClick',
 			1: 'MiddleClick',
@@ -69,18 +74,27 @@
 				return prop in obj ? obj[prop] : 'Mouse' + ((+prop) + 1);
 			}
 		});
-		MouseButtonBinding._eventHandler = (e) => {
-			e = e.originalEvent || e;
-			e.preventDefault();
+		MouseButtonBinding._eventHandlers = {
+			mousedown(e) {
+				e = e.originalEvent || e;
+				e.preventDefault();
 
-			const $input = $(e.target);
+				const $input = $(e.target);
+				$input.focus();
+				$input.val(MouseButtonBinding.format(e));
+			},
 
-			if (e.key === 'Escape') {
-				$input.val('');
-				return;
+			keydown(e) {
+				e = e.originalEvent || e;
+				if (IGNORED_KEYS.includes(e.key)) {
+					return;
+				}
+				e.preventDefault();
+				if (e.key === 'Escape') {
+					const $input = $(e.target);
+					$input.val('');
+				}
 			}
-
-			$input.val(MouseButtonBinding.format(e));
 		};
 		MouseButtonBinding.parse = (val) => {
 			if (!val) return val;
@@ -105,29 +119,30 @@
 		function KeyBinding(val) {
 			return val;
 		}
+
 		KeyBinding._LOCATIONS = {
 			0: '',
 			1: 'Left ',
 			2: 'Right ',
 			3: 'Numpad '
 		};
-		KeyBinding._EVENT_TYPE = 'keydown';
-		KeyBinding._IGNORED_KEYS = ['Shift', 'Alt', 'Control', 'Meta', 'F5'];
-		KeyBinding._eventHandler = (e) => {
-			e = e.originalEvent || e;
+		KeyBinding._eventHandlers = {
+			keydown(e) {
+				e = e.originalEvent || e;
 
-			if (KeyBinding._IGNORED_KEYS.includes(e.key)) {
-				return;
+				if (IGNORED_KEYS.includes(e.key)) {
+					return;
+				}
+
+				e.preventDefault();
+
+				const $input = $(e.target);
+				if (e.key === 'Escape') {
+					$input.val('');
+					return;
+				}
+				$input.val(KeyBinding.format(e));
 			}
-
-			e.preventDefault();
-
-			const $input = $(e.target);
-			if (e.key === 'Escape') {
-				$input.val('');
-				return;
-			}
-			$input.val(KeyBinding.format(e));
 		};
 		KeyBinding.parse = (val) => {
 			if (!val) return val;
@@ -156,15 +171,19 @@
 		function FilePickerImage(val) {
 			return val;
 		}
+
 		function FilePickerVideo(val) {
 			return val;
 		}
+
 		function FilePickerImageVideo(val) {
 			return val;
 		}
+
 		function FilePickerAudio(val) {
 			return val;
 		}
+
 		const filePickers = {
 			FilePickerImage,
 			FilePickerVideo,
@@ -232,7 +251,11 @@
 			super.activateListeners($html);
 
 			Object.entries(extraTypes).forEach(([name, type]) => {
-				$html.find(`[data-dtype="${name}"`).on(type._EVENT_TYPE, type._eventHandler);
+				if (!type._eventHandlers) return;
+				const $inputs = $html.find(`[data-dtype="${name}"`);
+				Object.entries(type._eventHandlers).forEach(([eventType, handler]) => {
+					$inputs.on(eventType, handler);
+				});
 			});
 		}
 	}
