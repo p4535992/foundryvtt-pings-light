@@ -3,10 +3,11 @@
  */
 (() => {
 	window.Azzu = window.Azzu || {};
-	const Settings = window.Azzu.PingsSettings = window.Azzu.PingsSettings || function PingsSettings(){};
+	function PingsSettings(){}
 
-	Hooks.once('init', () => {
+	Hooks.once('ready', () => {
 		registerPingsSettings();
+		Hooks.call('pingsSettingsReady', PingsSettings);
 	});
 
 	// Definitions
@@ -127,6 +128,6 @@
 				set
 			};
 		}
-		Object.defineProperty(Settings, key, getset);
+		Object.defineProperty(PingsSettings, key, getset);
 	}
 })();

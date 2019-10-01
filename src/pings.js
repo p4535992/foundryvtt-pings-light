@@ -1,6 +1,19 @@
-(() => {
-	window.Azzu = window.Azzu || {};
-	const Settings = window.Azzu.PingsSettings = window.Azzu.PingsSettings || function(){};
+(async () => {
+
+	async function preRequisitesReady() {
+		return Promise.all([areSettingsLoaded(), isCanvasReady()]);
+	}
+
+	async function areSettingsLoaded() {
+		return new Promise(resolve => {
+			Hooks.once('pingsSettingsReady', resolve);
+		});
+	}
+	async function isCanvasReady() {
+		return new Promise(resolve => {
+			Hooks.once('canvasReady', resolve);
+		});
+	}
 
 	class Net {
 		static get SOCKET_NAME() {
@@ -35,15 +48,14 @@
 		return Math.abs(p1.x - p2.x) <= px && Math.abs(p1.y - p2.y) <= px;
 	}
 
-	function isPressed(e, optionProp, bindingType) {
+	function isPressed(e, option, bindingType) {
 		const types = window.Azzu.SettingsTypes;
 		const type = bindingType === 'mouse' ? types.MouseButtonBinding : types.KeyBinding;
-		const option = Settings[optionProp];
 		return type.eventIsForBinding(e, option);
 	}
 
 	class PingsLayer extends CanvasLayer {
-		constructor(onUserPinged = () => {}) {
+		constructor(Settings, onUserPinged = () => {}) {
 			super();
 
 			this.onUserPinged = onUserPinged;
@@ -83,8 +95,8 @@
 
 		_onMouseDown(e) {
 			const bindingType = 'mouse';
-			const shouldPingMove = isPressed(e, 'mouseButtonMove', bindingType);
-			const shouldPingNoMove = isPressed(e, 'mouseButton', bindingType);
+			const shouldPingMove = isPressed(e, this.options.mouseButtonMove, bindingType);
+			const shouldPingNoMove = isPressed(e, this.options.mouseButton, bindingType);
 			if (!shouldPingMove && !shouldPingNoMove) return;
 
 			this._mouseDownStart = this._getMousePos();
@@ -98,7 +110,7 @@
 
 		_onMouseUp(e) {
 			if (this._mouseDownTimeout === undefined) return;
-			if (!isPressed(e, this._mouseDownOption, 'mouse')) return;
+			if (!isPressed(e, this.options[this._mouseDownOption], 'mouse')) return;
 
 			clearTimeout(this._mouseDownTimeout);
 			this._mouseDownTimeout = undefined;
@@ -123,8 +135,8 @@
 
 		_onKeyDown(e) {
 			const bindingType = 'keyboard';
-			const shouldPingMove = isPressed(e, 'keyMove', bindingType);
-			const shouldPingNoMove = isPressed(e, 'key', bindingType);
+			const shouldPingMove = isPressed(e, this.options.keyMove, bindingType);
+			const shouldPingNoMove = isPressed(e, this.options.key, bindingType);
 			if (!shouldPingMove && !shouldPingNoMove) return;
 
 			this._triggerPing(shouldPingMove);
@@ -330,9 +342,12 @@
 		}
 	}
 
-	Hooks.on('canvasReady', () => {
-		const pingsLayer = new PingsLayer(Net.sendPing);
-		Net.onPingReceived((...args) => pingsLayer.displayPing(...args));
-		PingsLayer.addToStage(canvas.stage, pingsLayer);
-	});
+
+	window.Azzu = window.Azzu || {};
+
+
+	const [Settings] = await preRequisitesReady();
+	const pingsLayer = new PingsLayer(Settings, Net.sendPing);
+	Net.onPingReceived((...args) => pingsLayer.displayPing(...args));
+	PingsLayer.addToStage(canvas.stage, pingsLayer);
 })();
