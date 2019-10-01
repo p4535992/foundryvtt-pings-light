@@ -49,6 +49,9 @@
 	}
 
 	function isPressed(e, option, bindingType) {
+		const userIsMissingPermission = !option;
+		if (userIsMissingPermission) return false;
+
 		const types = window.Azzu.SettingsTypes;
 		const type = bindingType === 'mouse' ? types.MouseButtonBinding : types.KeyBinding;
 		return type.eventIsForBinding(e, option);
@@ -163,7 +166,7 @@
 		displayPing(senderId, position, shouldMove = false) {
 			const user = game.users.get(senderId);
 
-			if (shouldMove) {
+			if (shouldMove && user.permission >= this.options.minMovePermission) {
 				canvas.animatePan(position);
 			}
 
