@@ -1,4 +1,6 @@
 {
+	"PINGS.minMovePermission.title": "Minimum Move Permission",
+	"PINGS.minMovePermission.hint": "The minimum permission to allow users to move the screen with a ping. For example, if ASSISTANT is selected, only Gamemasters and their Assistants are allowed to perform a ping that moves everybodies' screens.",
 	"PINGS.mouseButton.title": "Mouse Button to Press for a Ping",
 	"PINGS.mouseButton.hint": "The mouse button that needs to be held for a specified time (configurable below) to perform a ping. 0 = left, 1 = middle, 2 = right. Press your desired mouse button (with modifiers like shift/ctrl if you want) in this field, use the escape key to clear it again.",
 	"PINGS.mouseButtonMove.title": "Mouse Button for a Screen-Moving Ping",

@@ -3,16 +3,37 @@
  */
 (() => {
 	window.Azzu = window.Azzu || {};
-	const Settings = window.Azzu.PingsSettings = window.Azzu.PingsSettings || function PingsSettings(){};
+	function PingsSettings(){}
 
-	Hooks.once('init', () => {
+	Hooks.once('ready', () => {
 		registerPingsSettings();
+		Hooks.call('pingsSettingsReady', PingsSettings);
 	});
 
 	// Definitions
 
+	function registerMovePermissions() {
+		const choices = Object.entries(USER_PERMISSIONS).reduce((choices, [permission, val]) => {
+			choices[val] = permission;
+			return choices;
+		}, {});
+		const minimumPermissionKey = 'minMovePermission';
+		register(minimumPermissionKey, {
+			name: game.i18n.localize('PINGS.minMovePermission.title'),
+			hint: game.i18n.localize('PINGS.minMovePermission.hint'),
+			default: 0,
+			isSelect: true,
+			choices: choices,
+			type: Number,
+			scope: "world"
+		});
+		return PingsSettings[minimumPermissionKey];
+	}
+
 	function registerPingsSettings() {
 		const extraTypes = window.Azzu.SettingsTypes;
+
+		const minMovePermission = registerMovePermissions();
 
 		register('mouseButton', {
 			name: game.i18n.localize('PINGS.mouseButton.title'),
@@ -20,12 +41,14 @@
 			default: 'LeftClick',
 			type: extraTypes.MouseButtonBinding
 		});
-		register('mouseButtonMove', {
-			name: game.i18n.localize('PINGS.mouseButtonMove.title'),
-			hint: game.i18n.localize('PINGS.mouseButtonMove.hint'),
-			default: 'Shift + LeftClick',
-			type: extraTypes.MouseButtonBinding
-		});
+		if (game.user.permission >= minMovePermission) {
+			register('mouseButtonMove', {
+				name: game.i18n.localize('PINGS.mouseButtonMove.title'),
+				hint: game.i18n.localize('PINGS.mouseButtonMove.hint'),
+				default: 'Shift + LeftClick',
+				type: extraTypes.MouseButtonBinding
+			});
+		}
 		register('mouseButtonDuration', {
 			name: game.i18n.localize('PINGS.mouseButtonDuration.title'),
 			hint: game.i18n.localize('PINGS.mouseButtonDuration.hint'),
@@ -38,12 +61,14 @@
 			default: '',
 			type: extraTypes.KeyBinding
 		});
-		register('keyMove', {
-			name: game.i18n.localize('PINGS.keyMove.title'),
-			hint: game.i18n.localize('PINGS.keyMove.hint'),
-			default: '',
-			type: extraTypes.KeyBinding
-		});
+		if (game.user.permission >= minMovePermission) {
+			register('keyMove', {
+				name: game.i18n.localize('PINGS.keyMove.title'),
+				hint: game.i18n.localize('PINGS.keyMove.hint'),
+				default: '',
+				type: extraTypes.KeyBinding
+			});
+		}
 		register('showName', {
 			name: game.i18n.localize('PINGS.showName.title'),
 			hint: game.i18n.localize('PINGS.showName.hint'),
@@ -127,6 +152,6 @@
 				set
 			};
 		}
-		Object.defineProperty(Settings, key, getset);
+		Object.defineProperty(PingsSettings, key, getset);
 	}
 })();
