@@ -96,6 +96,9 @@
 			});
 		}
 
+		/**
+		 * @private
+		 */
 		_onMouseDown(e) {
 			const bindingType = 'mouse';
 			const shouldPingMove = isPressed(e, this.options.mouseButtonMove, bindingType);
@@ -111,6 +114,9 @@
 			}, this.options.mouseButtonDuration);
 		}
 
+		/**
+		 * @private
+		 */
 		_onMouseUp(e) {
 			if (this._mouseDownTimeout === undefined) return;
 			if (!isPressed(e, this.options[this._mouseDownOption], 'mouse')) return;
@@ -119,23 +125,38 @@
 			this._mouseDownTimeout = undefined;
 		}
 
+		/**
+		 * @private
+		 */
 		_onMouseOver(e) {
 			this._mouseOnCanvas = true;
 		}
+		/**
+		 * @private
+		 */
 		_onMouseOut(e) {
 			this._mouseOnCanvas = false;
 		}
 
+		/**
+		 * @private
+		 */
 		_registerListeners() {
 			this.globalEventListeners.forEach((l) => window.addEventListener(...l));
 			this.stageListeners.forEach(l => this.parent.on(...l));
 		}
 
+		/**
+		 * @private
+		 */
 		_unregisterListeners() {
 			this.globalEventListeners.forEach((l) => window.removeEventListener(...l));
 			this.stageListeners.forEach(l => this.parent.off(...l));
 		}
 
+		/**
+		 * @private
+		 */
 		_onKeyDown(e) {
 			const bindingType = 'keyboard';
 			const shouldPingMove = isPressed(e, this.options.keyMove, bindingType);
@@ -145,12 +166,18 @@
 			this._triggerPing(shouldPingMove);
 		}
 
+		/**
+		 * @private
+		 */
 		_triggerPing(moveToPing) {
 			let pos = this._getMousePos();
 			this.onUserPinged(pos, moveToPing);
 			this.displayPing(game.user._id, pos, moveToPing);
 		}
 
+		/**
+		 * @private
+		 */
 		_getMousePos() {
 			const mouse = canvas.app.renderer.plugins.interaction.mouse.global;
 			const t = this.worldTransform;
@@ -163,6 +190,13 @@
 			};
 		}
 
+		/**
+		 * Displays a ping on the canvas
+		 *
+		 * @param {String} senderId The player who sent the ping
+		 * @param {{x: Number, y: Number}} position
+		 * @param {Boolean} shouldMove if the ping should also move the canvas so the ping is centered
+		 */
 		displayPing(senderId, position, shouldMove = false) {
 			const user = game.users.get(senderId);
 
