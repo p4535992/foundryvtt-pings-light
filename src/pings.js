@@ -46,7 +46,7 @@
 
 		sendMessage(message, pingData) {
 			message.dataProperties.forEach(prop => {
-				if (pingData[prop] === undefined) {
+				if (!pingData.hasOwnProperty(prop)) {
 					throw new Error(`Missing data for message "${message.name}": ${prop}`);
 				}
 			});
@@ -62,13 +62,24 @@
 		}
 
 		static get MESSAGES() {
+			const defaultPingProperties = [
+				'id',
+				'position',
+				'moveCanvas'
+			];
 			return {
 				USER_PING: {
 					name: 'UserPing',
 					dataProperties: [
-						'senderId',
-						'position',
-						'moveCanvas'
+						...defaultPingProperties
+					]
+				},
+				TEXT_PING: {
+					name: 'TextPing',
+					dataProperties: [
+						'text',
+						'color',
+						...defaultPingProperties
 					]
 				},
 				REMOVE_PING: {
@@ -224,10 +235,10 @@
 			let position = this._getMousePos();
 			this.onUserPinged({
 				position,
-				senderId: game.user._id,
+				id: game.user._id,
 				moveCanvas
 			});
-			this.displayPing(position, game.user._id, moveCanvas);
+			this.displayUserPing(position, game.user._id, moveCanvas);
 		}
 
 		/**
@@ -248,22 +259,45 @@
 		}
 
 		/**
-		 * Displays a ping on the canvas
+		 * Displays a ping from a user on the canvas
 		 *
 		 * @param {{x: Number, y: Number}} position
 		 * @param {String} senderId The player who sent the ping
-		 * @param {Boolean} shouldMove if the ping should also move the canvas so the ping is centered
+		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered
 		 */
-		displayPing(position, senderId, shouldMove = false) {
+		displayUserPing(position, senderId, moveCanvas = false) {
 			const user = game.users.get(senderId);
-
-			if (shouldMove && user.permission >= this.options.minMovePermission) {
-				canvas.animatePan(position);
-			}
-
 			this.removePing(senderId);
 
-			this.addChild(new Ping(position, user._id, user.name, getUserColor(user), this.options));
+			const text = this.options.showName ? user.name : undefined;
+			const ping = new Ping(position, senderId, text, getUserColor(user), this.options);
+			moveCanvas = moveCanvas && user.permission >= this.options.minMovePermission;
+			this._displayPing(ping, moveCanvas)
+		}
+
+		/**
+		 * Displays a text ping on the canvas
+		 *
+		 * @param {{x: Number, y: Number}} position
+		 * @param {*} id id for the ping
+		 * @param {String} text text to show for the ping
+		 * @param {Number} color a 6-digit hexadecimal RBG value
+		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered
+		 */
+		displayTextPing(position, id, text, color, moveCanvas = false) {
+			const ping = new Ping(position, id, text, color, this.options);
+			this._displayPing(ping, moveCanvas);
+		}
+
+		/**
+		 * @private
+		 */
+		_displayPing(ping, moveCanvas = false) {
+			if (moveCanvas) {
+				canvas.animatePan({x: ping.x, y: ping.y});
+			}
+
+			this.addChild(ping);
 		}
 
 		removePing(id) {
@@ -295,10 +329,9 @@
 			this.pingSize = gridSize * this.options.scale;
 
 			this.ping = this.addChild(this._createPing(color));
-			if (options.showName) {
-				this.addChild(this._createName(text, color));
+			if (text) {
+				this.addChild(this._createText(text, color));
 			}
-
 
 			canvas.app.ticker.add(this._animate, this);
 		}
@@ -307,7 +340,7 @@
 			return this.options.image ? this._createPingImage(color) : this._createDefaultPing(color);
 		}
 
-		_createName(text, color) {
+		_createText(text, color) {
 			const style = CONFIG.tokenTextStyle.clone();
 			style.fill = color;
 
@@ -447,6 +480,13 @@
 		}
 	}
 
+	function throwErrorNoColor(color) {
+		throwErrorNoNumber(color, `color`);
+		if (color < 0 || color > 0xFFFFFF) {
+			throw new Error(`The color is not between 0x000000 and 0xFFFFFF`);
+		}
+	}
+
 	/**
 	 * Provides an API for external module authors to show pings. Registered on "Azzu.Pings".
 	 */
@@ -475,9 +515,9 @@
 			throwOnUserMissing(userId);
 			throwErrorNoNumber(position.x, `position.x`);
 			throwErrorNoNumber(position.y, `position.y`);
-			this._layer.displayPing(position, userId, moveCanvas);
+			this._layer.displayUserPing(position, userId, moveCanvas);
 			this._net.sendMessage(Net.MESSAGES.USER_PING, {
-				senderId: userId,
+				id: userId,
 				position,
 				moveCanvas
 			});
@@ -496,7 +536,7 @@
 			throwOnUserMissing(userId);
 			throwErrorNoNumber(position.x, `position.x`);
 			throwErrorNoNumber(position.y, `position.y`);
-			this._layer.displayPing(position, userId, moveCanvas);
+			this._layer.displayUserPing(position, userId, moveCanvas);
 			return userId;
 		}
 
@@ -512,11 +552,75 @@
 			throwErrorNoNumber(position.x, `position.x`);
 			throwErrorNoNumber(position.y, `position.y`);
 			this._net.sendMessage(Net.MESSAGES.USER_PING, {
+				id: userId,
 				position,
-				senderId: userId,
 				moveCanvas
 			});
 			return userId;
+		}
+
+		/**
+		 * Performs a ping with custom text on the canvas for all players.
+		 *
+		 * @param {{x: Number, y: Number}} position the position of the ping on the canvas
+		 * @param {String} text a custom text that should be shown below the ping. May be left falsy to not show any text.
+		 * @param {Number} [color=0xAAAAAA] a 6-digit hexadecimal RGB value from 0x000000 to 0xFFFFFF for the color of the ping
+		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
+		 */
+		performText(position, text, color = DEFAULT_PING_COLOR, moveCanvas = false) {
+			throwErrorNoNumber(position.x, `position.x`);
+			throwErrorNoNumber(position.y, `position.y`);
+			throwErrorNoColor(color);
+			const id = this._getId();
+			this._layer.displayTextPing(position, id, text, color, moveCanvas);
+			this._net.sendMessage(Net.MESSAGES.TEXT_PING, {
+				position,
+				id,
+				text,
+				color,
+				moveCanvas
+			});
+			return id;
+		}
+
+		/**
+		 * Shows a ping with custom text on the canvas.
+		 *
+		 * @param {{x: Number, y: Number}} position the position of the ping on the canvas
+		 * @param {String} text a custom text that should be shown below the ping. May be left falsy to not show any text.
+		 * @param {Number} [color=0xAAAAAA] a 6-digit hexadecimal RGB value from 0x000000 to 0xFFFFFF for the color of the ping
+		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
+		 */
+		showText(position, text, color = DEFAULT_PING_COLOR, moveCanvas = false) {
+			throwErrorNoNumber(position.x, `position.x`);
+			throwErrorNoNumber(position.y, `position.y`);
+			throwErrorNoColor(color);
+			const id = this._getId();
+			this._layer.displayTextPing(position, id, text, color, moveCanvas);
+			return id;
+		}
+
+		/**
+		 * Shows a ping with custom text on the canvas.
+		 *
+		 * @param {{x: Number, y: Number}} position the position of the ping on the canvas
+		 * @param {String} text a custom text that should be shown below the ping. May be left falsy to not show any text.
+		 * @param {Number} [color=0xAAAAAA] a 6-digit hexadecimal RGB value from 0x000000 to 0xFFFFFF for the color of the ping
+		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
+		 */
+		sendText(position, text, color = DEFAULT_PING_COLOR, moveCanvas = false) {
+			throwErrorNoNumber(position.x, `position.x`);
+			throwErrorNoNumber(position.y, `position.y`);
+			throwErrorNoColor(color);
+			const id = this._getId();
+			this._net.sendMessage(Net.MESSAGES.TEXT_PING, {
+				position,
+				id,
+				text,
+				color,
+				moveCanvas
+			});
+			return id;
 		}
 
 		/**
@@ -533,8 +637,12 @@
 	}
 
 	function addNetworkBehavior(net, pingsLayer) {
-		net.on(Net.MESSAGES.USER_PING, ({position, senderId, moveToPing}) => {
-			pingsLayer.displayPing(position, senderId, moveToPing)
+		net.on(Net.MESSAGES.USER_PING, ({id, position, moveCanvas}) => {
+			pingsLayer.displayUserPing(position, id, moveCanvas)
+		});
+
+		net.on(Net.MESSAGES.TEXT_PING, ({id, position, text, color, moveCanvas}) => {
+			pingsLayer.displayTextPing(position, id, text, color, moveCanvas);
 		});
 
 		net.on(Net.MESSAGES.REMOVE_PING, ({id}) => {
