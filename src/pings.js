@@ -658,4 +658,5 @@
 	addNetworkBehavior(net, pingsLayer);
 	PingsLayer.addToStage(canvas.stage, pingsLayer);
 	window.Azzu.Pings = new PingsAPI(pingsLayer, net);
+	Hooks.callAll('pingsReady', window.Azzu.Pings);
 })();
