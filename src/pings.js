@@ -24,10 +24,10 @@
 			game.socket.emit(Net.SOCKET_NAME, ...args)
 		}
 
-		static sendPing(position, moveToPing) {
+		static sendPing(position, userId = game.user._id, moveToPing = false) {
 			Net._emit({
 				sceneId: canvas.scene._id,
-				senderId: game.user._id,
+				senderId: userId,
 				position,
 				moveToPing
 			});
@@ -39,7 +39,7 @@
 					return;
 				}
 
-				func(data.senderId, data.position, data.moveToPing);
+				func(data.position, data.senderId, data.moveToPing);
 			});
 		}
 	}
@@ -171,8 +171,8 @@
 		 */
 		_triggerPing(moveToPing) {
 			let pos = this._getMousePos();
-			this.onUserPinged(pos, moveToPing);
-			this.displayPing(game.user._id, pos, moveToPing);
+			this.onUserPinged(pos, game.user._id, moveToPing);
+			this.displayPing(pos, game.user._id, moveToPing);
 		}
 
 		/**
@@ -193,11 +193,11 @@
 		/**
 		 * Displays a ping on the canvas
 		 *
-		 * @param {String} senderId The player who sent the ping
 		 * @param {{x: Number, y: Number}} position
+		 * @param {String} senderId The player who sent the ping
 		 * @param {Boolean} shouldMove if the ping should also move the canvas so the ping is centered
 		 */
-		displayPing(senderId, position, shouldMove = false) {
+		displayPing(position, senderId, shouldMove = false) {
 			const user = game.users.get(senderId);
 
 			if (shouldMove && user.permission >= this.options.minMovePermission) {
@@ -379,6 +379,68 @@
 		}
 	}
 
+	function throwErrorNoNumber(num, name) {
+		if (typeof num !== `number` || isNaN(num)) {
+			throw new Error(`${name} is not a valid number!`);
+		}
+	}
+
+	function throwOnUserMissing(userId) {
+		if (!game.users.get(userId)) {
+			throw new Error(`Given userId "${userId}" does not represent a player!`);
+		}
+	}
+
+	/**
+	 * Provides an API for external module authors to show pings. Registered on "Azzu.Pings".
+	 */
+	class PingsAPI {
+
+		constructor(layer, net) {
+			this.layer = layer;
+			this.net = net;
+		}
+
+		/**
+		 * Shows a ping on the canvas as if the given user had sent a ping for all users in the game.
+		 *
+		 * @param {{x: Number, y: Number}} position the position of the ping on the canvas
+		 * @param {String} [userId=game.user._id] userId of the user the ping should originate from
+		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
+		 */
+		show(position, userId = game.user._id, moveCanvas = false) {
+			this.showLocal(position, userId, moveCanvas);
+			this.send(position, userId, moveCanvas);
+		}
+
+		/**
+		 * Shows a ping on the canvas as if the given user had sent a ping. Does not send the ping to any other player.
+		 *
+		 * @param {{x: Number, y: Number}} position the position of the ping on the canvas
+		 * @param {String} [userId=game.user._id] userId of the user the ping should originate from
+		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
+		 */
+		showLocal(position, userId = game.user._id, moveCanvas = false) {
+			throwOnUserMissing(userId);
+			throwErrorNoNumber(position.x, `position.x`);
+			throwErrorNoNumber(position.y, `position.y`);
+			pingsLayer.displayPing(position, userId, moveCanvas);
+		}
+
+		/**
+		 * Sends a ping to other players as if it was triggered by the given user.
+		 * @param {{x: Number, y: Number}} position the position of the ping on the canvas
+		 * @param {String} [userId=game.user._id] userId of the user the ping should originate from
+		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
+		 */
+		send(position, userId = game.user._id, moveCanvas = false) {
+			throwOnUserMissing(userId);
+			throwErrorNoNumber(position.x, `position.x`);
+			throwErrorNoNumber(position.y, `position.y`);
+			Net.sendPing(position, userId, moveCanvas);
+		}
+	}
+
 
 	window.Azzu = window.Azzu || {};
 
@@ -387,4 +449,5 @@
 	const pingsLayer = new PingsLayer(Settings, Net.sendPing);
 	Net.onPingReceived((...args) => pingsLayer.displayPing(...args));
 	PingsLayer.addToStage(canvas.stage, pingsLayer);
+	window.Azzu.Pings = new PingsAPI(pingsLayer, Net);
 })();
