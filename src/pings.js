@@ -9,6 +9,7 @@
 			Hooks.once('pingsSettingsReady', resolve);
 		});
 	}
+
 	async function isCanvasReady() {
 		return new Promise(resolve => {
 			Hooks.once('canvasReady', resolve);
@@ -16,31 +17,65 @@
 	}
 
 	class Net {
-		static get SOCKET_NAME() {
-			return 'module.pings';
-		}
 
-		static _emit(...args) {
-			game.socket.emit(Net.SOCKET_NAME, ...args)
-		}
-
-		static sendPing(position, userId = game.user._id, moveToPing = false) {
-			Net._emit({
-				sceneId: canvas.scene._id,
-				senderId: userId,
-				position,
-				moveToPing
-			});
-		}
-
-		static onPingReceived(func) {
+		constructor() {
 			game.socket.on(Net.SOCKET_NAME, (data) => {
 				if (canvas.scene._id !== data.sceneId) {
 					return;
 				}
 
-				func(data.position, data.senderId, data.moveToPing);
+				this._runMessageCallbacks(data.message, data.pingData);
 			});
+		}
+
+		_messageCallbacks(message) {
+			const prop = `_funcs${message}`;
+			if (!this[prop]) {
+				this[prop] = [];
+			}
+			return this[prop];
+		}
+
+		_runMessageCallbacks(message, pingData) {
+			this._messageCallbacks(message).forEach(func => func(pingData));
+		}
+
+		on(message, func) {
+			this._messageCallbacks(message.name).push(func);
+		}
+
+		sendMessage(message, pingData) {
+			message.dataProperties.forEach(prop => {
+				if (pingData[prop] === undefined) {
+					throw new Error(`Missing data for message "${message.name}": ${prop}`);
+				}
+			});
+			Net._emit({
+				message: message.name,
+				sceneId: canvas.scene._id,
+				pingData
+			});
+		}
+
+		static get SOCKET_NAME() {
+			return 'module.pings';
+		}
+
+		static get MESSAGES() {
+			return {
+				USER_PING: {
+					name: 'UserPing',
+					dataProperties: [
+						'senderId',
+						'position',
+						'moveCanvas'
+					]
+				}
+			};
+		}
+
+		static _emit(...args) {
+			game.socket.emit(Net.SOCKET_NAME, ...args)
 		}
 	}
 
@@ -169,10 +204,14 @@
 		/**
 		 * @private
 		 */
-		_triggerPing(moveToPing) {
-			let pos = this._getMousePos();
-			this.onUserPinged(pos, game.user._id, moveToPing);
-			this.displayPing(pos, game.user._id, moveToPing);
+		_triggerPing(moveCanvas) {
+			let position = this._getMousePos();
+			this.onUserPinged({
+				position,
+				senderId: game.user._id,
+				moveCanvas
+			});
+			this.displayPing(position, game.user._id, moveCanvas);
 		}
 
 		/**
@@ -397,20 +436,27 @@
 	class PingsAPI {
 
 		constructor(layer, net) {
-			this.layer = layer;
-			this.net = net;
+			this._layer = layer;
+			this._net = net;
 		}
 
 		/**
-		 * Shows a ping on the canvas as if the given user had sent a ping for all users in the game.
+		 * Perform a ping on the canvas as if the given user had performed a ping for all users in the game.
 		 *
 		 * @param {{x: Number, y: Number}} position the position of the ping on the canvas
 		 * @param {String} [userId=game.user._id] userId of the user the ping should originate from
 		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
 		 */
-		show(position, userId = game.user._id, moveCanvas = false) {
-			this.showLocal(position, userId, moveCanvas);
-			this.send(position, userId, moveCanvas);
+		perform(position, userId = game.user._id, moveCanvas = false) {
+			throwOnUserMissing(userId);
+			throwErrorNoNumber(position.x, `position.x`);
+			throwErrorNoNumber(position.y, `position.y`);
+			this._layer.displayPing(position, userId, moveCanvas);
+			this._net.sendMessage(Net.MESSAGES.USER_PING, {
+				senderId: userId,
+				position,
+				moveCanvas
+			});
 		}
 
 		/**
@@ -420,15 +466,16 @@
 		 * @param {String} [userId=game.user._id] userId of the user the ping should originate from
 		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
 		 */
-		showLocal(position, userId = game.user._id, moveCanvas = false) {
+		show(position, userId = game.user._id, moveCanvas = false) {
 			throwOnUserMissing(userId);
 			throwErrorNoNumber(position.x, `position.x`);
 			throwErrorNoNumber(position.y, `position.y`);
-			pingsLayer.displayPing(position, userId, moveCanvas);
+			this._layer.displayPing(position, userId, moveCanvas);
 		}
 
 		/**
 		 * Sends a ping to other players as if it was triggered by the given user.
+		 *
 		 * @param {{x: Number, y: Number}} position the position of the ping on the canvas
 		 * @param {String} [userId=game.user._id] userId of the user the ping should originate from
 		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
@@ -437,17 +484,23 @@
 			throwOnUserMissing(userId);
 			throwErrorNoNumber(position.x, `position.x`);
 			throwErrorNoNumber(position.y, `position.y`);
-			Net.sendPing(position, userId, moveCanvas);
+			this._net.sendMessage(Net.MESSAGES.USER_PING, {
+				position,
+				senderId: userId,
+				moveCanvas
+			});
 		}
 	}
 
 
 	window.Azzu = window.Azzu || {};
 
-
 	const [Settings] = await preRequisitesReady();
-	const pingsLayer = new PingsLayer(Settings, Net.sendPing);
-	Net.onPingReceived((...args) => pingsLayer.displayPing(...args));
+	const net = new Net();
+	const pingsLayer = new PingsLayer(Settings, net.sendMessage.bind(net, Net.MESSAGES.USER_PING));
+	net.on(Net.MESSAGES.USER_PING, ({position, senderId, moveToPing}) => {
+		pingsLayer.displayPing(position, senderId, moveToPing)
+	});
 	PingsLayer.addToStage(canvas.stage, pingsLayer);
-	window.Azzu.Pings = new PingsAPI(pingsLayer, Net);
+	window.Azzu.Pings = new PingsAPI(pingsLayer, net);
 })();
