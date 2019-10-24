@@ -29,6 +29,19 @@ Contains a default ping image but can be completely customized in the module set
 
 ![settings](./doc/settings.png)
 
+# Module Author API
+
+There is an API for module authors which can be accessed by doing either
+
+```
+Hooks.once('pingsReady', (pingsApi) => {
+    // use pingsApi
+});`
+```
+or `window.Azzu.Pings`.
+
+Look for available methods by reading the [source](https://gitlab.com/foundry-azzurite/pings/blob/master/src/pings.js) (look for `class PingsAPI`).
+
 # Contributing
 
 All PRs welcome. Keep the formatting the same.
