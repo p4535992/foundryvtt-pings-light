@@ -304,9 +304,9 @@
 			this.children.filter((ping) => ping.id === id).forEach((ping) => ping.destroy());
 		}
 
-		static addToStage(stage, pingsLayer) {
-			canvas.pings = stage.addChild(pingsLayer);
-			pingsLayer._registerListeners();
+		addToStage() {
+			canvas.pings = canvas.stage.addChild(this);
+			this._registerListeners();
 		}
 	}
 
@@ -656,7 +656,7 @@
 	const net = new Net();
 	const pingsLayer = new PingsLayer(Settings, net.sendMessage.bind(net, Net.MESSAGES.USER_PING));
 	addNetworkBehavior(net, pingsLayer);
-	PingsLayer.addToStage(canvas.stage, pingsLayer);
+	pingsLayer.addToStage();
 	window.Azzu.Pings = new PingsAPI(pingsLayer, net);
 	Hooks.callAll('pingsReady', window.Azzu.Pings);
 })();
