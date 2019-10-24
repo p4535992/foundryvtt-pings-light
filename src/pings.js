@@ -70,6 +70,12 @@
 						'position',
 						'moveCanvas'
 					]
+				},
+				REMOVE_PING: {
+					name: 'RemovePing',
+					dataProperties: [
+						'id'
+					]
 				}
 			};
 		}
@@ -92,6 +98,12 @@
 		return type.eventIsForBinding(e, option);
 	}
 
+	const DEFAULT_PING_COLOR = 0xAAAAAA;
+
+	function getUserColor(user) {
+		return user.color.replace("#", "0x") || DEFAULT_PING_COLOR;
+	}
+
 	class PingsLayer extends CanvasLayer {
 		constructor(Settings, onUserPinged = () => {}) {
 			super();
@@ -109,9 +121,12 @@
 			].map(([e, h]) => {
 				return [e, h.bind(this)];
 			}).map(([e, h]) => {
-				return [e, (e) => {
-					if (this._mouseOnCanvas) h(e.originalEvent || e);
-				}];
+				return [
+					e,
+					(e) => {
+						if (this._mouseOnCanvas) h(e.originalEvent || e);
+					}
+				];
 			});
 
 			this.stageListeners = [
@@ -166,6 +181,7 @@
 		_onMouseOver(e) {
 			this._mouseOnCanvas = true;
 		}
+
 		/**
 		 * @private
 		 */
@@ -220,9 +236,11 @@
 		_getMousePos() {
 			const mouse = canvas.app.renderer.plugins.interaction.mouse.global;
 			const t = this.worldTransform;
+
 			function calcCoord(axis) {
 				return (mouse[axis] - t['t' + axis]) / canvas.stage.scale[axis];
 			}
+
 			return {
 				x: calcCoord('x'),
 				y: calcCoord('y')
@@ -243,9 +261,13 @@
 				canvas.animatePan(position);
 			}
 
-			this.children.filter((ping) => ping.user._id === senderId).forEach((ping) => ping.destroy());
+			this.removePing(senderId);
 
-			this.addChild(new Ping(user, position, this.options));
+			this.addChild(new Ping(position, user._id, user.name, getUserColor(user), this.options));
+		}
+
+		removePing(id) {
+			this.children.filter((ping) => ping.id === id).forEach((ping) => ping.destroy());
 		}
 
 		static addToStage(stage, pingsLayer) {
@@ -259,42 +281,37 @@
 	 */
 	class Ping extends PIXI.Container {
 
-		constructor(user, pos, options) {
+		constructor(pos, id, text, color, options) {
 			super();
-
-			this.options = options;
-
-			this.user = user;
 
 			this.x = pos.x;
 			this.y = pos.y;
 
+			this.id = id;
+
+			this.options = options;
+
 			const gridSize = canvas.scene.data.grid;
 			this.pingSize = gridSize * this.options.scale;
 
-			this.ping = this.addChild(this._createPing(user));
+			this.ping = this.addChild(this._createPing(color));
 			if (options.showName) {
-				this.addChild(this._createName(user));
+				this.addChild(this._createName(text, color));
 			}
 
 
 			canvas.app.ticker.add(this._animate, this);
 		}
 
-		_createPing(user) {
-			const color = Ping._getUserColor(user);
+		_createPing(color) {
 			return this.options.image ? this._createPingImage(color) : this._createDefaultPing(color);
 		}
 
-		static _getUserColor(user) {
-			return user.color.replace("#", "0x") || 0xAAAAAA;
-		}
-
-		_createName(user) {
+		_createName(text, color) {
 			const style = CONFIG.tokenTextStyle.clone();
-			style.fill = Ping._getUserColor(user);
+			style.fill = color;
 
-			const name = new PIXI.Text(user.name, style);
+			const name = new PIXI.Text(text, style);
 			name.anchor.x = 0.5;
 			const maxSizeChange = 1 + (this.options.sizeChange ? this.options.sizeChangeAmount : 0);
 			name.y = this.pingSize / 2 * maxSizeChange;
@@ -440,12 +457,19 @@
 			this._net = net;
 		}
 
+		_getId() {
+			// an incremental number was considered,
+			// but that has more chance of collision between multiple users
+			return Math.random().toString(36).substr(2);
+		}
+
 		/**
 		 * Perform a ping on the canvas as if the given user had performed a ping for all users in the game.
 		 *
 		 * @param {{x: Number, y: Number}} position the position of the ping on the canvas
 		 * @param {String} [userId=game.user._id] userId of the user the ping should originate from
 		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
+		 * @return {*} a ping id to be able to remove the ping with
 		 */
 		perform(position, userId = game.user._id, moveCanvas = false) {
 			throwOnUserMissing(userId);
@@ -457,6 +481,7 @@
 				position,
 				moveCanvas
 			});
+			return userId;
 		}
 
 		/**
@@ -465,12 +490,14 @@
 		 * @param {{x: Number, y: Number}} position the position of the ping on the canvas
 		 * @param {String} [userId=game.user._id] userId of the user the ping should originate from
 		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
+		 * @return {*} a ping id to be able to remove the ping with
 		 */
 		show(position, userId = game.user._id, moveCanvas = false) {
 			throwOnUserMissing(userId);
 			throwErrorNoNumber(position.x, `position.x`);
 			throwErrorNoNumber(position.y, `position.y`);
 			this._layer.displayPing(position, userId, moveCanvas);
+			return userId;
 		}
 
 		/**
@@ -489,18 +516,38 @@
 				senderId: userId,
 				moveCanvas
 			});
+			return userId;
+		}
+
+		/**
+		 * Removes a ping that has been created with the other methods of this class.
+		 * @param {*} id a ping ID obtained by calling one of the other methods of this class
+		 * @param {Boolean} [removeForOthers=true] if the ping should be removed for all users. If false, will only be removed locally.
+		 */
+		remove(id, removeForOthers = true) {
+			this._layer.removePing(id);
+			if (removeForOthers) {
+				this._net.sendMessage(Net.MESSAGES.REMOVE_PING, {id});
+			}
 		}
 	}
 
+	function addNetworkBehavior(net, pingsLayer) {
+		net.on(Net.MESSAGES.USER_PING, ({position, senderId, moveToPing}) => {
+			pingsLayer.displayPing(position, senderId, moveToPing)
+		});
+
+		net.on(Net.MESSAGES.REMOVE_PING, ({id}) => {
+			pingsLayer.removePing(id);
+		});
+	}
 
 	window.Azzu = window.Azzu || {};
 
 	const [Settings] = await preRequisitesReady();
 	const net = new Net();
 	const pingsLayer = new PingsLayer(Settings, net.sendMessage.bind(net, Net.MESSAGES.USER_PING));
-	net.on(Net.MESSAGES.USER_PING, ({position, senderId, moveToPing}) => {
-		pingsLayer.displayPing(position, senderId, moveToPing)
-	});
+	addNetworkBehavior(net, pingsLayer);
 	PingsLayer.addToStage(canvas.stage, pingsLayer);
 	window.Azzu.Pings = new PingsAPI(pingsLayer, net);
 })();
