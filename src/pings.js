@@ -205,6 +205,13 @@
 		 */
 		_registerListeners() {
 			this.globalEventListeners.forEach((l) => window.addEventListener(...l));
+			this._registerStageListeners();
+		}
+
+		/**
+		 * @private
+		 */
+		_registerStageListeners() {
 			this.stageListeners.forEach(l => this.parent.on(...l));
 		}
 
@@ -307,6 +314,8 @@
 		addToStage() {
 			canvas.pings = canvas.stage.addChild(this);
 			this._registerListeners();
+			// when canvas is drawn again, the listeners to the stage get cleared, so register them again
+			Hooks.on('canvasReady', () => this._registerStageListeners());
 		}
 	}
 
