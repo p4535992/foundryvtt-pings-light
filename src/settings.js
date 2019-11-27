@@ -13,7 +13,7 @@
 	// Definitions
 
 	function registerMovePermissions() {
-		const choices = Object.entries(USER_PERMISSIONS).reduce((choices, [permission, val]) => {
+		const choices = Object.entries(CONST.USER_ROLES).reduce((choices, [permission, val]) => {
 			choices[val] = permission;
 			return choices;
 		}, {});
@@ -41,7 +41,7 @@
 			default: 'LeftClick',
 			type: extraTypes.MouseButtonBinding
 		});
-		if (game.user.permission >= minMovePermission) {
+		if (game.user.role >= minMovePermission) {
 			register('mouseButtonMove', {
 				name: game.i18n.localize('PINGS.mouseButtonMove.title'),
 				hint: game.i18n.localize('PINGS.mouseButtonMove.hint'),
@@ -61,7 +61,7 @@
 			default: '',
 			type: extraTypes.KeyBinding
 		});
-		if (game.user.permission >= minMovePermission) {
+		if (game.user.role >= minMovePermission) {
 			register('keyMove', {
 				name: game.i18n.localize('PINGS.keyMove.title'),
 				hint: game.i18n.localize('PINGS.keyMove.hint'),

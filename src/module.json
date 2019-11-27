@@ -20,5 +20,6 @@
 	"socket": true,
 	"manifest": "https://gitlab.com/foundry-azzurite/pings/raw/master/src/module.json",
 	"download": "https://gitlab.com/foundry-azzurite/pings/raw/master/dist/pings.zip",
-	"url": "https://gitlab.com/foundry-azzurite/pings"
+	"url": "https://gitlab.com/foundry-azzurite/pings",
+	"minimumCoreVersion": "0.4.0"
 }
