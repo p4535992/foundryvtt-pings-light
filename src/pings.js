@@ -278,7 +278,7 @@
 
 			const text = this.options.showName ? user.name : undefined;
 			const ping = new Ping(position, senderId, text, getUserColor(user), this.options);
-			moveCanvas = moveCanvas && user.role >= this.options.minMovePermission;
+			moveCanvas = moveCanvas && user.hasRole(this.options.minMovePermission);
 			this._displayPing(ping, moveCanvas)
 		}
 

@@ -1,3 +1,7 @@
+# 1.2.2
+
+* Fixes move pings compatibility with 0.4.0.
+
 # 1.2.1
 
 * Compatibility with 0.4.0 ([Thanks Stephen Hurd!](https://gitlab.com/foundry-azzurite/pings/merge_requests/1))
