@@ -1,33 +1,81 @@
-/**
- * window.Azzu.PingsSettings is guaranteed to be initialized after Hooks->init
- */
 (() => {
 	window.Azzu = window.Azzu || {};
-	function PingsSettings(){}
 
-	Hooks.once('ready', () => {
+	const KEYS = {
+		PINGS: 'pings',
+		MINIMUM_PERMISSION: 'minMovePermission',
+		LAST_VERSION: 'lastVersion'
+	};
+
+	const MIGRATION = {
+		UNNECESSARY: 0,
+		FAILED: 1
+	};
+
+	async function migrate() {
+		let result = MIGRATION.UNNECESSARY;
+		game.settings.register(KEYS.PINGS, 'lastVersion', {
+			config: false,
+			scope: 'client',
+			type: String,
+			default: ''
+		});
+		let lastVersion = game.settings.get(KEYS.PINGS, KEYS.LAST_VERSION);
+		if (!lastVersion) {
+			if (game.settings.get(KEYS.PINGS, KEYS.MINIMUM_PERMISSION) === 0) {
+				await game.settings.set(KEYS.PINGS, KEYS.MINIMUM_PERMISSION,  1);
+			}
+
+			registerPingsSettings();
+
+			await game.settings.set(KEYS.PINGS, KEYS.LAST_VERSION, '1.2.2');
+			result = lastVersion = '1.2.2';
+		}
+		return lastVersion === '1.2.2' ? result : MIGRATION.FAILED;
+	}
+
+	function PingsSettings() {}
+
+	Hooks.once('ready', async () => {
 		registerPingsSettings();
+		const migrationResult = await migrate();
+		if (migrationResult === MIGRATION.FAILED) {
+			alert('The settings of the "Pings" module could not be updated after you installed a new version. If you' +
+				' encounter any issues or this message keeps showing up, please disable the module and contact me on ' +
+				'Discord (Azzurite#2004) or file an issue at https://gitlab.com/foundry-azzurite/pings/issues');
+		} else if (!Object.values(MIGRATION).includes(migrationResult)) {
+			const chatMessage = new ChatMessage({
+				speaker: {alias: 'Pings Module Notification'},
+				content: `You have updated the Pings module to v${migrationResult}. The module settings structure has` +
+					' changed, so the settings were successfully migrated. You may have to reload this page for the' +
+					' settings menu to work correctly.',
+				whisper: [],
+				timestamp: Date.now()
+			});
+			ui.chat.postOne(chatMessage, false);
+		}
 		Hooks.call('pingsSettingsReady', PingsSettings);
 	});
 
 	// Definitions
 
 	function registerMovePermissions() {
-		const choices = Object.entries(CONST.USER_ROLES).reduce((choices, [permission, val]) => {
-			choices[val] = permission;
-			return choices;
-		}, {});
-		const minimumPermissionKey = 'minMovePermission';
-		register(minimumPermissionKey, {
+		const choices = Object.entries(CONST.USER_ROLES)
+			.filter(([key, val]) => val !== 0)
+			.reduce((choices, [permission, val]) => {
+				choices[val] = permission;
+				return choices;
+			}, {});
+		register(KEYS.MINIMUM_PERMISSION, {
 			name: game.i18n.localize('PINGS.minMovePermission.title'),
 			hint: game.i18n.localize('PINGS.minMovePermission.hint'),
-			default: 0,
+			default: 1,
 			isSelect: true,
 			choices: choices,
 			type: Number,
 			scope: "world"
 		});
-		return PingsSettings[minimumPermissionKey];
+		return PingsSettings[KEYS.MINIMUM_PERMISSION];
 	}
 
 	function registerPingsSettings() {
@@ -41,7 +89,7 @@
 			default: 'LeftClick',
 			type: extraTypes.MouseButtonBinding
 		});
-		if (game.user.role >= minMovePermission) {
+		if (game.user.hasRole(minMovePermission)) {
 			register('mouseButtonMove', {
 				name: game.i18n.localize('PINGS.mouseButtonMove.title'),
 				hint: game.i18n.localize('PINGS.mouseButtonMove.hint'),
@@ -61,7 +109,7 @@
 			default: '',
 			type: extraTypes.KeyBinding
 		});
-		if (game.user.role >= minMovePermission) {
+		if (game.user.hasRole(minMovePermission)) {
 			register('keyMove', {
 				name: game.i18n.localize('PINGS.keyMove.title'),
 				hint: game.i18n.localize('PINGS.keyMove.hint'),
@@ -134,12 +182,12 @@
 			...data
 		};
 		defineSetting(key, dataWithDefaults.type);
-		game.settings.register('pings', key, dataWithDefaults);
+		game.settings.register(KEYS.PINGS, key, dataWithDefaults);
 	}
 
 	function defineSetting(key, type) {
-		const get = () => game.settings.get('pings', key);
-		const set = (val) => game.settings.set('pings', key, val);
+		const get = () => game.settings.get(KEYS.PINGS, key);
+		const set = (val) => game.settings.set(KEYS.PINGS, key, val);
 		let getset;
 		if (type.parse && Object.values(window.Azzu.SettingsTypes).includes(type)) {
 			getset = {
@@ -152,6 +200,6 @@
 				set
 			};
 		}
-		Object.defineProperty(PingsSettings, key, getset);
+		if (!PingsSettings.hasOwnProperty(key)) Object.defineProperty(PingsSettings, key, getset);
 	}
 })();
