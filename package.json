@@ -1,6 +1,6 @@
 {
 	"name": "pings",
-	"version": "1.2.2",
+	"version": "1.2.3",
 	"scripts": {
 		"updateVersion": "node build/updateVersion.js",
 		"package": "npm run updateVersion && node build/package.js"

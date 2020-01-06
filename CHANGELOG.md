@@ -1,3 +1,7 @@
+# 1.2.3
+
+* Compatibility with 0.4.4
+
 # 1.2.2
 
 * Fixes move pings compatibility with 0.4.0.
