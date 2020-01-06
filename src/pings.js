@@ -320,6 +320,14 @@
 	}
 
 	/**
+	 * Up to 0.4.3 tokenTextStyle, after that canvasTextStyle
+	 * @returns {*}
+	 */
+	function getCanvasTextStyle() {
+		return CONFIG.tokenTextStyle || CONFIG.canvasTextStyle;
+	}
+
+	/**
 	 * Adapted from https://gitlab.com/moerills-fvtt-modules/pointer
 	 */
 	class Ping extends PIXI.Container {
@@ -350,7 +358,7 @@
 		}
 
 		_createText(text, color) {
-			const style = CONFIG.tokenTextStyle.clone();
+			const style = getCanvasTextStyle().clone();
 			style.fill = color;
 
 			const name = new PIXI.Text(text, style);
@@ -572,8 +580,10 @@
 		 * Performs a ping with custom text on the canvas for all players.
 		 *
 		 * @param {{x: Number, y: Number}} position the position of the ping on the canvas
-		 * @param {String} text a custom text that should be shown below the ping. May be left falsy to not show any text.
-		 * @param {Number} [color=0xAAAAAA] a 6-digit hexadecimal RGB value from 0x000000 to 0xFFFFFF for the color of the ping
+		 * @param {String} text a custom text that should be shown below the ping. May be left falsy to not show any
+		 *     text.
+		 * @param {Number} [color=0xAAAAAA] a 6-digit hexadecimal RGB value from 0x000000 to 0xFFFFFF for the color of
+		 *     the ping
 		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
 		 */
 		performText(position, text, color = DEFAULT_PING_COLOR, moveCanvas = false) {
@@ -596,8 +606,10 @@
 		 * Shows a ping with custom text on the canvas.
 		 *
 		 * @param {{x: Number, y: Number}} position the position of the ping on the canvas
-		 * @param {String} text a custom text that should be shown below the ping. May be left falsy to not show any text.
-		 * @param {Number} [color=0xAAAAAA] a 6-digit hexadecimal RGB value from 0x000000 to 0xFFFFFF for the color of the ping
+		 * @param {String} text a custom text that should be shown below the ping. May be left falsy to not show any
+		 *     text.
+		 * @param {Number} [color=0xAAAAAA] a 6-digit hexadecimal RGB value from 0x000000 to 0xFFFFFF for the color of
+		 *     the ping
 		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
 		 */
 		showText(position, text, color = DEFAULT_PING_COLOR, moveCanvas = false) {
@@ -613,8 +625,10 @@
 		 * Shows a ping with custom text on the canvas.
 		 *
 		 * @param {{x: Number, y: Number}} position the position of the ping on the canvas
-		 * @param {String} text a custom text that should be shown below the ping. May be left falsy to not show any text.
-		 * @param {Number} [color=0xAAAAAA] a 6-digit hexadecimal RGB value from 0x000000 to 0xFFFFFF for the color of the ping
+		 * @param {String} text a custom text that should be shown below the ping. May be left falsy to not show any
+		 *     text.
+		 * @param {Number} [color=0xAAAAAA] a 6-digit hexadecimal RGB value from 0x000000 to 0xFFFFFF for the color of
+		 *     the ping
 		 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
 		 */
 		sendText(position, text, color = DEFAULT_PING_COLOR, moveCanvas = false) {
@@ -635,7 +649,8 @@
 		/**
 		 * Removes a ping that has been created with the other methods of this class.
 		 * @param {*} id a ping ID obtained by calling one of the other methods of this class
-		 * @param {Boolean} [removeForOthers=true] if the ping should be removed for all users. If false, will only be removed locally.
+		 * @param {Boolean} [removeForOthers=true] if the ping should be removed for all users. If false, will only be
+		 *     removed locally.
 		 */
 		remove(id, removeForOthers = true) {
 			this._layer.removePing(id);

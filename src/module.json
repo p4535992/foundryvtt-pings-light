@@ -3,7 +3,7 @@
 	"title": "Pings",
 	"description": "Allows pinging on the map",
 	"version": "1.2.2",
-	"minimumCoreVersion": "0.4.3",
+	"minimumCoreVersion": "0.4.4",
 	"author": "Azzurite#2004",
 	"scripts": [
 		"settings-extender.js",
