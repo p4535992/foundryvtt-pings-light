@@ -1,3 +1,7 @@
+# 1.2.4
+
+* Update to latest version of settings-extender
+
 # 1.2.3
 
 * Compatibility with 0.4.4
