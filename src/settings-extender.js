@@ -1,10 +1,14 @@
 /**
- * settings-extender version 1.1.0
- *
  * window.Azzu.SettingsTypes is guaranteed to be initialized on document.ready
  * window.Azzu.ExtendedSettingsConfig is guaranteed to be initialized after Hooks->ready
  */
 (() => {
+	const SETTINGS_EXTENDER_VERSION = {
+		major: 1,
+		minor: 1,
+		patch: 1
+	};
+
 	window.Azzu = window.Azzu || {};
 	registerSettingsTypes();
 	extendSettingsWindow();
@@ -283,11 +287,22 @@
 		};
 	}
 
+	function isNewestVersionEnabled() {
+		const existingClass = window.Azzu.ExtendedSettingsConfig;
+		if (!existingClass) return false;
+
+		const oldVersion = existingClass.settingsExtenderVersion;
+		if (!oldVersion) return false;
+
+		const curVersion = SETTINGS_EXTENDER_VERSION;
+		return oldVersion.major < curVersion.major
+			|| oldVersion.minor < curVersion.minor
+			|| oldVersion.patch < curVersion.patch
+	}
+
 	function extendSettingsWindow() {
 		Hooks.once('ready', () => {
-			if (window.Azzu.ExtendedSettingsConfig) {
-				return;
-			}
+			if (isNewestVersionEnabled()) return;
 
 			window.Azzu.ExtendedSettingsConfig = ExtendedSettingsConfig;
 			game.settings._sheet = new ExtendedSettingsConfig(game.settings.settings);
@@ -295,6 +310,17 @@
 	}
 
 	class ExtendedSettingsConfig extends SettingsConfig {
+
+		static get settingsExtenderVersion() {
+			return SETTINGS_EXTENDER_VERSION;
+		}
+
+		static get defaultOptions() {
+			return mergeObject(super.defaultOptions, {
+				baseApplication: 'SettingsConfig'
+			});
+		}
+
 		getData() {
 			const data = super.getData();
 			data.modules.flatMap(m => m.settings).forEach(setting => {

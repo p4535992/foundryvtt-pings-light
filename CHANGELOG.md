@@ -1,3 +1,8 @@
+# 1.2.4
+
+* Fix [#4](https://gitlab.com/foundry-azzurite/pings/issues/4) Ping happening when menu pops up on click
+* Update to latest version of settings-extender
+
 # 1.2.3
 
 * Compatibility with 0.4.4
