@@ -169,7 +169,7 @@
 			this._mouseDownStart = this._getMousePos();
 			this._mouseDownOption = 'mouseButton' + (shouldPingMove ? 'Move' : '');
 			this._mouseDownTimeout = setTimeout(() => {
-				if (isWithinPx(this._mouseDownStart, this._getMousePos(), 5)) {
+				if (this._mouseOnCanvas && isWithinPx(this._mouseDownStart, this._getMousePos(), 5)) {
 					this._triggerPing(shouldPingMove);
 				}
 			}, this.options.mouseButtonDuration);
@@ -205,13 +205,6 @@
 		 */
 		_registerListeners() {
 			this.globalEventListeners.forEach((l) => window.addEventListener(...l));
-			this._registerStageListeners();
-		}
-
-		/**
-		 * @private
-		 */
-		_registerStageListeners() {
 			this.stageListeners.forEach(l => this.parent.on(...l));
 		}
 
