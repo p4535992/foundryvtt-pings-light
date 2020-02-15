@@ -1,3 +1,7 @@
+# 1.2.5
+
+* Fix an exception when changing scenes
+
 # 1.2.4
 
 * Fix [#4](https://gitlab.com/foundry-azzurite/pings/issues/4) Ping happening when menu pops up on click

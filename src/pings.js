@@ -205,6 +205,13 @@
 		 */
 		_registerListeners() {
 			this.globalEventListeners.forEach((l) => window.addEventListener(...l));
+			this._registerStageListeners();
+		}
+
+		/**
+		 * @private
+		 */
+		_registerStageListeners() {
 			this.stageListeners.forEach(l => this.parent.on(...l));
 		}
 
