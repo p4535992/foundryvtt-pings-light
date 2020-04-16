@@ -1,3 +1,7 @@
+# 1.2.6
+
+* Compatibility with 0.5.4
+
 # 1.2.5
 
 * Fix an exception when changing scenes
