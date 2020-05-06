@@ -135,7 +135,7 @@
 				return [
 					e,
 					(e) => {
-						if (this._mouseOnCanvas) h(e.originalEvent || e);
+						h(e.originalEvent || e);
 					}
 				];
 			});
@@ -161,6 +161,7 @@
 		 * @private
 		 */
 		_onMouseDown(e) {
+			if (!this._mouseOnCanvas) return;
 			const bindingType = 'mouse';
 			const shouldPingMove = isPressed(e, this.options.mouseButtonMove, bindingType);
 			const shouldPingNoMove = isPressed(e, this.options.mouseButton, bindingType);
@@ -227,6 +228,7 @@
 		 * @private
 		 */
 		_onKeyDown(e) {
+			if (!this._mouseOnCanvas) return;
 			const bindingType = 'keyboard';
 			const shouldPingMove = isPressed(e, this.options.keyMove, bindingType);
 			const shouldPingNoMove = isPressed(e, this.options.key, bindingType);
