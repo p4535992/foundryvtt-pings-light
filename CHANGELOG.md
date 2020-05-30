@@ -1,3 +1,7 @@
+# 1.2.8
+
+* Verify & update core 0.6.0 compatibility
+
 # 1.2.7
 
 * Fix [#4](https://gitlab.com/foundry-azzurite/pings/issues/6): ping happening even when mouse was released before the timeout
