@@ -2,9 +2,9 @@
 	"name": "pings",
 	"title": "Pings",
 	"description": "Allows pinging on the map",
-	"version": "1.2.8",
+	"version": "1.2.9",
 	"minimumCoreVersion": "0.4.4",
-	"compatibleCoreVersion": "0.6.0",
+	"compatibleCoreVersion": "0.6.1",
 	"author": "Azzurite#2004",
 	"scripts": [
 		"settings-extender.js",

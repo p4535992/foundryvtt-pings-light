@@ -1,3 +1,8 @@
+# 1.2.9
+
+* Update to latest version of settings-extender
+* Compatibility check with 0.6.1
+
 # 1.2.8
 
 * Verify & update core 0.6.0 compatibility
