@@ -1,0 +1,23 @@
+{
+	"title": "Pings",
+	"minimumCoreVersion": "0.4.4",
+	"compatibleCoreVersion": "0.6.5",
+	"scripts": [
+		"settings-extender.js",
+		"settings.js",
+		"pings.js"
+	],
+	"languages": [
+		{
+			"lang": "en",
+			"path": "languages/en.json"
+		},
+		{
+		    "lang": "pt-BR",
+		    "name": "Português (Brasil)",
+		    "path": "languages/pt-BR.json"
+		}
+	],
+	"socket": true,
+	"url": "https://gitlab.com/foundry-azzurite/pings"
+}
