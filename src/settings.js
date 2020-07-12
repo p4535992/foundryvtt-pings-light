@@ -40,19 +40,19 @@
 		registerPingsSettings();
 		const migrationResult = await migrate();
 		if (migrationResult === MIGRATION.FAILED) {
-			alert('The settings of the "Pings" module could not be updated after you installed a new version. If you' +
-				' encounter any issues or this message keeps showing up, please disable the module and contact me on ' +
-				'Discord (Azzurite#2004) or file an issue at https://gitlab.com/foundry-azzurite/pings/issues');
-		} else if (!Object.values(MIGRATION).includes(migrationResult)) {
-			const chatMessage = new ChatMessage({
+			alert('The settings of the "Pings" module could not be updated after you or your GM installed a new ' +
+				'version. If you encounter any issues or this message keeps showing up, please disable the module ' +
+				'and contact me on Discord (Azzurite#2004) or file an issue at ' +
+				'https://gitlab.com/foundry-azzurite/pings/issues');
+		} else if (typeof migrationResult === 'string' && migrationResult !== '1.2.2') {
+			ChatMessage.create({
 				speaker: {alias: 'Pings Module Notification'},
-				content: `You have updated the Pings module to v${migrationResult}. The module settings structure has` +
-					' changed, so the settings were successfully migrated. You may have to reload this page for the' +
-					' settings menu to work correctly.',
-				whisper: [],
+				content: `You have updated the Pings module to at least v${migrationResult}. The module settings ` +
+					'structure has changed, so the settings were successfully migrated. You may have to reload this ' +
+					'page for the settings menu to work correctly.',
+				whisper: [game.user._id],
 				timestamp: Date.now()
 			});
-			ui.chat.postOne(chatMessage, false);
 		}
 		Hooks.call('pingsSettingsReady', PingsSettings);
 	});
