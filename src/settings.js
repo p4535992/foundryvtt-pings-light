@@ -9,29 +9,53 @@
 
 	const MIGRATION = {
 		UNNECESSARY: 0,
-		FAILED: 1
+		FAILED: 1,
+		SUCCESS: 2
 	};
 
-	async function migrate() {
-		let result = MIGRATION.UNNECESSARY;
-		game.settings.register(KEYS.PINGS, 'lastVersion', {
-			config: false,
-			scope: 'client',
-			type: String,
-			default: ''
-		});
-		let lastVersion = game.settings.get(KEYS.PINGS, KEYS.LAST_VERSION);
-		if (!lastVersion) {
-			if (game.settings.get(KEYS.PINGS, KEYS.MINIMUM_PERMISSION) === 0) {
-				await game.settings.set(KEYS.PINGS, KEYS.MINIMUM_PERMISSION,  1);
+	const migrations = [
+		{
+			version: '1.2.2',
+			func: async (lastVersion) => {
+				if (lastVersion) {
+					return MIGRATION.UNNECESSARY;
+				}
+
+				if (game.settings.get(KEYS.PINGS, KEYS.MINIMUM_PERMISSION) === 0) {
+					await game.settings.set(KEYS.PINGS, KEYS.MINIMUM_PERMISSION, 1);
+				}
+
+				await game.settings.set(KEYS.PINGS, KEYS.LAST_VERSION, '1.2.2');
+				return MIGRATION.SUCCESS;
 			}
-
-			registerPingsSettings();
-
-			await game.settings.set(KEYS.PINGS, KEYS.LAST_VERSION, '1.2.2');
-			result = lastVersion = '1.2.2';
 		}
-		return lastVersion === '1.2.2' ? result : MIGRATION.FAILED;
+	];
+
+	async function migrate() {
+		try {
+			game.settings.register(KEYS.PINGS, 'lastVersion', {
+				config: false,
+				scope: 'client',
+				type: String,
+				default: ''
+			});
+			let finalResult;
+			let lastVersion = game.settings.get(KEYS.PINGS, KEYS.LAST_VERSION);
+			for (migration of migrations) {
+				const migrationResult = await migration.func(lastVersion);
+				if (migrationResult === MIGRATION.FAILED) {
+					finalResult = migrationResult;
+					break;
+				} else if (finalResult !== MIGRATION.SUCCESS) {
+					finalResult = migrationResult;
+				}
+				lastVersion = migration.version;
+			}
+			return finalResult === MIGRATION.SUCCESS ? lastVersion : finalResult;
+		} catch (e) {
+			console.error('Pings migration failed:', e);
+			return MIGRATION.FAILED;
+		}
 	}
 
 	function PingsSettings() {}
