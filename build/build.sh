@@ -2,8 +2,8 @@
 set -o errexit
 set -o xtrace
 
-module=$(jq -r ".name" ${base}/package.json)
 base=$(pwd)
+module=$(jq -r ".name" ${base}/package.json)
 rm -rf dist
 mkdir -p dist/${module}
 cd dist
