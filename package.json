@@ -1,6 +1,8 @@
 {
 	"name": "pings",
 	"version": "1.2.9",
+	"description": "Allows pinging on the map",
+	"author": "Azzurite#2004",
 	"scripts": {
 		"updateVersion": "node build/updateVersion.js",
 		"package": "npm run updateVersion && node build/package.js"
