@@ -1,3 +1,5 @@
+import {initNetwork, sendMessage, onMessageReceived, MESSAGES} from './net.js';
+
 (async () => {
 
 	async function preRequisitesReady() {
@@ -16,85 +18,7 @@
 		});
 	}
 
-	class Net {
 
-		constructor() {
-			game.socket.on(Net.SOCKET_NAME, (data) => {
-				if (canvas.scene._id !== data.sceneId) {
-					return;
-				}
-
-				this._runMessageCallbacks(data.message, data.pingData);
-			});
-		}
-
-		_messageCallbacks(message) {
-			const prop = `_funcs${message}`;
-			if (!this[prop]) {
-				this[prop] = [];
-			}
-			return this[prop];
-		}
-
-		_runMessageCallbacks(message, pingData) {
-			this._messageCallbacks(message).forEach(func => func(pingData));
-		}
-
-		on(message, func) {
-			this._messageCallbacks(message.name).push(func);
-		}
-
-		sendMessage(message, pingData) {
-			message.dataProperties.forEach(prop => {
-				if (!pingData.hasOwnProperty(prop)) {
-					throw new Error(`Missing data for message "${message.name}": ${prop}`);
-				}
-			});
-			Net._emit({
-				message: message.name,
-				sceneId: canvas.scene._id,
-				pingData
-			});
-		}
-
-		static get SOCKET_NAME() {
-			return 'module.pings';
-		}
-
-		static get MESSAGES() {
-			const defaultPingProperties = [
-				'id',
-				'position',
-				'moveCanvas'
-			];
-			return {
-				USER_PING: {
-					name: 'UserPing',
-					dataProperties: [
-						...defaultPingProperties
-					]
-				},
-				TEXT_PING: {
-					name: 'TextPing',
-					dataProperties: [
-						'text',
-						'color',
-						...defaultPingProperties
-					]
-				},
-				REMOVE_PING: {
-					name: 'RemovePing',
-					dataProperties: [
-						'id'
-					]
-				}
-			};
-		}
-
-		static _emit(...args) {
-			game.socket.emit(Net.SOCKET_NAME, ...args)
-		}
-	}
 
 	function isWithinPx(p1, p2, px) {
 		return Math.abs(p1.x - p2.x) <= px && Math.abs(p1.y - p2.y) <= px;
@@ -511,9 +435,8 @@
 	 */
 	class PingsAPI {
 
-		constructor(layer, net) {
+		constructor(layer) {
 			this._layer = layer;
-			this._net = net;
 		}
 
 		_getId() {
@@ -535,7 +458,7 @@
 			throwErrorNoNumber(position.x, `position.x`);
 			throwErrorNoNumber(position.y, `position.y`);
 			this._layer.displayUserPing(position, userId, moveCanvas);
-			this._net.sendMessage(Net.MESSAGES.USER_PING, {
+			sendMessage(MESSAGES.USER_PING, {
 				id: userId,
 				position,
 				moveCanvas
@@ -570,7 +493,7 @@
 			throwOnUserMissing(userId);
 			throwErrorNoNumber(position.x, `position.x`);
 			throwErrorNoNumber(position.y, `position.y`);
-			this._net.sendMessage(Net.MESSAGES.USER_PING, {
+			sendMessage(MESSAGES.USER_PING, {
 				id: userId,
 				position,
 				moveCanvas
@@ -594,7 +517,7 @@
 			throwErrorNoColor(color);
 			const id = this._getId();
 			this._layer.displayTextPing(position, id, text, color, moveCanvas);
-			this._net.sendMessage(Net.MESSAGES.TEXT_PING, {
+			sendMessage(MESSAGES.TEXT_PING, {
 				position,
 				id,
 				text,
@@ -638,7 +561,7 @@
 			throwErrorNoNumber(position.y, `position.y`);
 			throwErrorNoColor(color);
 			const id = this._getId();
-			this._net.sendMessage(Net.MESSAGES.TEXT_PING, {
+			sendMessage(MESSAGES.TEXT_PING, {
 				position,
 				id,
 				text,
@@ -657,21 +580,21 @@
 		remove(id, removeForOthers = true) {
 			this._layer.removePing(id);
 			if (removeForOthers) {
-				this._net.sendMessage(Net.MESSAGES.REMOVE_PING, {id});
+				sendMessage(MESSAGES.REMOVE_PING, {id});
 			}
 		}
 	}
 
-	function addNetworkBehavior(net, pingsLayer) {
-		net.on(Net.MESSAGES.USER_PING, ({id, position, moveCanvas}) => {
+	function addNetworkBehavior(pingsLayer) {
+		onMessageReceived(MESSAGES.USER_PING, ({id, position, moveCanvas}) => {
 			pingsLayer.displayUserPing(position, id, moveCanvas)
 		});
 
-		net.on(Net.MESSAGES.TEXT_PING, ({id, position, text, color, moveCanvas}) => {
+		onMessageReceived(MESSAGES.TEXT_PING, ({id, position, text, color, moveCanvas}) => {
 			pingsLayer.displayTextPing(position, id, text, color, moveCanvas);
 		});
 
-		net.on(Net.MESSAGES.REMOVE_PING, ({id}) => {
+		onMessageReceived(MESSAGES.REMOVE_PING, ({id}) => {
 			pingsLayer.removePing(id);
 		});
 	}
@@ -679,10 +602,10 @@
 	window.Azzu = window.Azzu || {};
 
 	const [Settings] = await preRequisitesReady();
-	const net = new Net();
-	const pingsLayer = new PingsLayer(Settings, net.sendMessage.bind(net, Net.MESSAGES.USER_PING));
-	addNetworkBehavior(net, pingsLayer);
+	initNetwork();
+	const pingsLayer = new PingsLayer(Settings, sendMessage.bind(null, MESSAGES.USER_PING));
+	addNetworkBehavior(pingsLayer);
 	pingsLayer.addToStage();
-	window.Azzu.Pings = new PingsAPI(pingsLayer, net);
+	window.Azzu.Pings = new PingsAPI(pingsLayer);
 	Hooks.callAll('pingsReady', window.Azzu.Pings);
 })();

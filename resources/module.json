@@ -4,7 +4,9 @@
 	"compatibleCoreVersion": "0.6.5",
 	"scripts": [
 		"settings-extender.js",
-		"settings.js",
+		"settings.js"
+	],
+	"esmodules": [
 		"pings.js"
 	],
 	"languages": [
