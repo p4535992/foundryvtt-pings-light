@@ -5,7 +5,7 @@ window.Azzu = window.Azzu || {};
 
 /**
  * May only be called after the foundry game.settings object is fully initialized
- * @returns {Promise<void>}
+ * @returns {Promise<GuiOptions>}
  */
 export default async function setupSettings(foundryGame) {
 	const settings = {};

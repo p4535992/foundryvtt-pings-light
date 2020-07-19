@@ -1,6 +1,6 @@
 import {initNetwork, MESSAGES, onMessageReceived, sendMessage} from './net.js';
 import {initApi} from './api.js';
-import {addToStage, PingsLayer} from './pings-layer.js';
+import createPingsGui from './pings-gui.js';
 import setupSettings from './settings/settings.js';
 import Ping from './ping.js';
 
@@ -23,31 +23,32 @@ async function isCanvasReady() {
 	});
 }
 
-function addNetworkBehavior(pingsLayer) {
+function addNetworkBehavior(pingsGui) {
+	initNetwork();
+
 	onMessageReceived(MESSAGES.USER_PING, ({id, position, moveCanvas}) => {
-		pingsLayer.displayUserPing(position, id, moveCanvas)
+		pingsGui.displayUserPing(position, id, moveCanvas)
 	});
 
 	onMessageReceived(MESSAGES.TEXT_PING, ({id, position, text, color, moveCanvas}) => {
-		pingsLayer.displayTextPing(position, id, text, color, moveCanvas);
+		pingsGui.displayTextPing(position, id, text, color, moveCanvas);
 	});
 
 	onMessageReceived(MESSAGES.REMOVE_PING, ({id}) => {
-		pingsLayer.removePing(id);
+		pingsGui.removePing(id);
 	});
 }
 
 (async () => {
 	const [Settings] = await preRequisitesReady();
-	initNetwork();
-	const pingsLayer = new PingsLayer(Settings,
+	const pingsGui = createPingsGui(window,
 		canvas,
 		game,
+		Settings,
 		(...args) => new Ping(canvas, CONFIG, ...args),
 		sendMessage.bind(null, MESSAGES.USER_PING)
 	);
-	addNetworkBehavior(pingsLayer);
-	addToStage(pingsLayer);
-	const api = initApi(pingsLayer);
+	addNetworkBehavior(pingsGui);
+	const api = initApi(pingsGui);
 	Hooks.callAll('pingsReady', api);
 })();

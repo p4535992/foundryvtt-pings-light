@@ -130,10 +130,44 @@ function rotationDuringTime(ping, dt) {
 }
 
 /**
+ * @typedef {Object} PingPosition
+ * @property {number} x x position of the ping
+ * @property {number} y y position of the ping
+ */
+
+/**
+ * @typedef {string} ColorString
+ *
+ * A string of a hexadecimal number in the form of 0xRRGGBB
+ */
+
+/**
+ * @typedef {Object} PingOptions
+ * @property {number} scale how big in grid cells the ping should be
+ * @property {number} duration how long in seconds the ping should be displayed
+ * @property {boolean} sizeChange if the ping should change its size while being displayed
+ * @property {number} sizeChangeAmount how much in % the size should be increased/decreased
+ * @property {number} sizeChangeSpeed how many times per second the size should cycle between -sizeChangeAmount and +sizeChangeAmount
+ * @property {boolean} rotate if the ping should rotate while being displayed
+ * @property {number} rotateSpeed how long a full rotation should take, in seconds
+ * @property {string} image an URL for an image, if set, will use the image instead of the default ping
+ */
+
+/**
  * Adapted from https://gitlab.com/moerills-fvtt-modules/pointer
  */
 export default class Ping extends PIXI.Container {
 
+	/**
+	 *
+	 * @param foundryCanvas
+	 * @param foundryConfig
+	 * @param {PingPosition} pos
+	 * @param {*} id
+	 * @param {string} text
+	 * @param {ColorString} color
+	 * @param {PingOptions} options
+	 */
 	constructor(foundryCanvas, foundryConfig, pos, id, text, color, options) {
 		super();
 
