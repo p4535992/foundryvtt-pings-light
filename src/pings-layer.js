@@ -1,5 +1,3 @@
-import Ping from './ping.js';
-
 function isWithinPx(p1, p2, px) {
 	return Math.abs(p1.x - p2.x) <= px && Math.abs(p1.y - p2.y) <= px;
 }
@@ -30,7 +28,7 @@ function onMouseDown(layer, e) {
 	layer._mouseDownOption = 'mouseButton' + (shouldPingMove ? 'Move' : '');
 	layer._mouseDownTimeout = setTimeout(() => {
 		if (layer._mouseOnCanvas && isWithinPx(layer._mouseDownStart, getMousePos(layer), 5)) {
-			triggerPing(layer, shouldPingMove);
+			layer.triggerPing(shouldPingMove);
 		}
 	}, layer.options.mouseButtonDuration);
 }
@@ -72,18 +70,9 @@ function onKeyDown(layer, e) {
 	const shouldPingNoMove = isPressed(e, layer.options.key, bindingType);
 	if (!shouldPingMove && !shouldPingNoMove) return;
 
-	triggerPing(layer, shouldPingMove);
+	layer.triggerPing(shouldPingMove);
 }
 
-function triggerPing(layer, moveCanvas) {
-	let position = getMousePos(layer);
-	layer.onUserPinged({
-		position,
-		id: game.user._id,
-		moveCanvas
-	});
-	layer.displayUserPing(position, game.user._id, moveCanvas);
-}
 
 function getMousePos(layer) {
 	const mouse = canvas.app.renderer.plugins.interaction.mouse.global;
@@ -99,21 +88,23 @@ function getMousePos(layer) {
 	};
 }
 
-function displayPing(layer, ping, moveCanvas = false) {
+function displayPing(layer, foundryCanvas, ping, moveCanvas = false) {
 	if (moveCanvas) {
-		canvas.animatePan({x: ping.x, y: ping.y});
+		foundryCanvas.animatePan({x: ping.x, y: ping.y});
 	}
 
 	layer.addChild(ping);
 }
 
 export class PingsLayer extends CanvasLayer {
-	constructor(Settings, onUserPinged = () => {}) {
+	constructor(Settings, foundryCanvas, foundryGame, createPing, onUserPinged = () => {}) {
 		super();
 
-		this.onUserPinged = onUserPinged;
-
 		this.options = Settings;
+		this.foundryCanvas = foundryCanvas;
+		this.foundryGame = foundryGame;
+		this.createPing = createPing;
+		this.onUserPinged = onUserPinged;
 
 		this.pings = {};
 
@@ -150,6 +141,21 @@ export class PingsLayer extends CanvasLayer {
 	}
 
 	/**
+	 * Triggers a ping from the current user at the current mouse location
+	 *
+	 * @param moveCanvas if the canvas should be moved
+	 */
+	triggerPing(moveCanvas) {
+		let position = getMousePos(this);
+		this.onUserPinged({
+			position,
+			id: this.foundryGame.user._id,
+			moveCanvas
+		});
+		this.displayUserPing(position, this.foundryGame.user._id, moveCanvas);
+	}
+
+	/**
 	 * Displays a ping from a user on the canvas
 	 *
 	 * @param {{x: Number, y: Number}} position
@@ -157,13 +163,13 @@ export class PingsLayer extends CanvasLayer {
 	 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered
 	 */
 	displayUserPing(position, senderId, moveCanvas = false) {
-		const user = game.users.get(senderId);
+		const user = this.foundryGame.users.get(senderId);
 		this.removePing(senderId);
 
 		const text = this.options.showName ? user.name : undefined;
-		const ping = new Ping(position, senderId, text, getUserColor(user), this.options);
+		const ping = this.createPing(position, senderId, text, getUserColor(user), this.options);
 		moveCanvas = moveCanvas && user.hasRole(this.options.minMovePermission);
-		displayPing(this, ping, moveCanvas)
+		displayPing(this, this.foundryCanvas, ping, moveCanvas)
 	}
 
 	/**
@@ -176,8 +182,8 @@ export class PingsLayer extends CanvasLayer {
 	 * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered
 	 */
 	displayTextPing(position, id, text, color, moveCanvas = false) {
-		const ping = new Ping(position, id, text, color, this.options);
-		displayPing(this, ping, moveCanvas);
+		const ping = this.createPing(position, id, text, color, this.options);
+		displayPing(this, this.foundryCanvas, ping, moveCanvas);
 	}
 
 	removePing(id) {

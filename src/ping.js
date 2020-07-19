@@ -2,8 +2,8 @@
  * Up to 0.4.3 tokenTextStyle, after that canvasTextStyle
  * @returns {*}
  */
-function getCanvasTextStyle() {
-	return CONFIG.tokenTextStyle || CONFIG.canvasTextStyle;
+function getCanvasTextStyle(foundryConfig) {
+	return foundryConfig.tokenTextStyle || foundryConfig.canvasTextStyle;
 }
 
 
@@ -12,7 +12,7 @@ function createPingDisplay(ping, color) {
 }
 
 function createText(ping, text, color) {
-	const style = getCanvasTextStyle().clone();
+	const style = getCanvasTextStyle(ping.foundryConfig).clone();
 	style.fill = color;
 
 	const name = new PIXI.Text(text, style);
@@ -119,7 +119,7 @@ function animate(ping) {
 			ping.pingDisplay.width = ping.pingDisplay.height = ping.pingSize * sizeMultiplier;
 		}
 	} else if (this.t < fadeOutEndTime) {
-		ping.scale.x = ping.scale.y = (fadeOutEndTime - ping.t) / FADE_OUT_DURATION;
+		ping.scale.x = ping.scale.y = (fadeOutEndTime - this.t) / FADE_OUT_DURATION;
 	} else {
 		ping.destroy();
 	}
@@ -134,8 +134,11 @@ function rotationDuringTime(ping, dt) {
  */
 export default class Ping extends PIXI.Container {
 
-	constructor(pos, id, text, color, options) {
+	constructor(foundryCanvas, foundryConfig, pos, id, text, color, options) {
 		super();
+
+		this.foundryCanvas = foundryCanvas;
+		this.foundryConfig = foundryConfig;
 
 		this.x = pos.x;
 		this.y = pos.y;
@@ -144,7 +147,7 @@ export default class Ping extends PIXI.Container {
 
 		this.options = options;
 
-		const gridSize = canvas.scene.data.grid;
+		const gridSize = foundryCanvas.scene.data.grid;
 		this.pingSize = gridSize * this.options.scale;
 
 		this.pingDisplay = this.addChild(createPingDisplay(this, color));
@@ -153,11 +156,11 @@ export default class Ping extends PIXI.Container {
 		}
 
 		this._animateFunc = animate.bind({}, this);
-		canvas.app.ticker.add(this._animateFunc, this);
+		foundryCanvas.app.ticker.add(this._animateFunc, this);
 	}
 
 	destroy(options) {
-		canvas.app.ticker.remove(this._animateFunc, this);
+		this.foundryCanvas.app.ticker.remove(this._animateFunc, this);
 
 		super.destroy({
 			...options,

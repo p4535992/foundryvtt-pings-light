@@ -1,7 +1,8 @@
-import {initNetwork, sendMessage, onMessageReceived, MESSAGES} from './net.js';
+import {initNetwork, MESSAGES, onMessageReceived, sendMessage} from './net.js';
 import {initApi} from './api.js';
-import {PingsLayer, addToStage} from './pings-layer.js';
+import {addToStage, PingsLayer} from './pings-layer.js';
 import setupSettings from './settings/settings.js';
+import Ping from './ping.js';
 
 
 async function preRequisitesReady() {
@@ -11,7 +12,7 @@ async function preRequisitesReady() {
 async function areSettingsLoaded() {
 	return new Promise(resolve => {
 		Hooks.once('ready', () => {
-			resolve(setupSettings());
+			resolve(setupSettings(game));
 		});
 	});
 }
@@ -39,7 +40,12 @@ function addNetworkBehavior(pingsLayer) {
 (async () => {
 	const [Settings] = await preRequisitesReady();
 	initNetwork();
-	const pingsLayer = new PingsLayer(Settings, sendMessage.bind(null, MESSAGES.USER_PING));
+	const pingsLayer = new PingsLayer(Settings,
+		canvas,
+		game,
+		(...args) => new Ping(canvas, CONFIG, ...args),
+		sendMessage.bind(null, MESSAGES.USER_PING)
+	);
 	addNetworkBehavior(pingsLayer);
 	addToStage(pingsLayer);
 	const api = initApi(pingsLayer);
