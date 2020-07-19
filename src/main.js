@@ -1,6 +1,6 @@
 import {initNetwork, sendMessage, onMessageReceived, MESSAGES} from './net.js';
 import {initApi} from './api.js';
-import PingsLayer from './pings-layer.js';
+import {PingsLayer, addToStage} from './pings-layer.js';
 
 
 async function preRequisitesReady() {
@@ -38,7 +38,7 @@ function addNetworkBehavior(pingsLayer) {
 	initNetwork();
 	const pingsLayer = new PingsLayer(Settings, sendMessage.bind(null, MESSAGES.USER_PING));
 	addNetworkBehavior(pingsLayer);
-	pingsLayer.addToStage();
+	addToStage(pingsLayer);
 	const api = initApi(pingsLayer);
 	Hooks.callAll('pingsReady', api);
 })();

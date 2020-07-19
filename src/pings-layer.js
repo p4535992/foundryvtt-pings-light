@@ -19,7 +19,95 @@ function getUserColor(user) {
 	return user.color.replace("#", "0x") || DEFAULT_PING_COLOR;
 }
 
-export default class PingsLayer extends CanvasLayer {
+function onMouseDown(layer, e) {
+	if (!layer._mouseOnCanvas) return;
+	const bindingType = 'mouse';
+	const shouldPingMove = isPressed(e, layer.options.mouseButtonMove, bindingType);
+	const shouldPingNoMove = isPressed(e, layer.options.mouseButton, bindingType);
+	if (!shouldPingMove && !shouldPingNoMove) return;
+
+	layer._mouseDownStart = getMousePos(layer);
+	layer._mouseDownOption = 'mouseButton' + (shouldPingMove ? 'Move' : '');
+	layer._mouseDownTimeout = setTimeout(() => {
+		if (layer._mouseOnCanvas && isWithinPx(layer._mouseDownStart, getMousePos(layer), 5)) {
+			triggerPing(layer, shouldPingMove);
+		}
+	}, layer.options.mouseButtonDuration);
+}
+
+function onMouseUp(layer, e) {
+	if (layer._mouseDownTimeout === undefined) return;
+	if (!isPressed(e, layer.options[layer._mouseDownOption], 'mouse')) return;
+
+	clearTimeout(layer._mouseDownTimeout);
+	layer._mouseDownTimeout = undefined;
+}
+
+function onMouseOver(layer, e) {
+	layer._mouseOnCanvas = true;
+}
+
+function onMouseOut(layer, e) {
+	layer._mouseOnCanvas = false;
+}
+
+function registerListeners(layer) {
+	layer.globalEventListeners.forEach((l) => window.addEventListener(...l));
+	registerStageListeners(layer);
+}
+
+function registerStageListeners(layer) {
+	layer.stageListeners.forEach(l => layer.parent.on(...l));
+}
+
+function unregisterListeners(layer) {
+	layer.globalEventListeners.forEach((l) => window.removeEventListener(...l));
+	layer.stageListeners.forEach(l => layer.parent.off(...l));
+}
+
+function onKeyDown(layer, e) {
+	if (!layer._mouseOnCanvas) return;
+	const bindingType = 'keyboard';
+	const shouldPingMove = isPressed(e, layer.options.keyMove, bindingType);
+	const shouldPingNoMove = isPressed(e, layer.options.key, bindingType);
+	if (!shouldPingMove && !shouldPingNoMove) return;
+
+	triggerPing(layer, shouldPingMove);
+}
+
+function triggerPing(layer, moveCanvas) {
+	let position = getMousePos(layer);
+	layer.onUserPinged({
+		position,
+		id: game.user._id,
+		moveCanvas
+	});
+	layer.displayUserPing(position, game.user._id, moveCanvas);
+}
+
+function getMousePos(layer) {
+	const mouse = canvas.app.renderer.plugins.interaction.mouse.global;
+	const t = layer.worldTransform;
+
+	function calcCoord(axis) {
+		return (mouse[axis] - t['t' + axis]) / canvas.stage.scale[axis];
+	}
+
+	return {
+		x: calcCoord('x'),
+		y: calcCoord('y')
+	};
+}
+
+function displayPing(layer, ping, moveCanvas = false) {
+	if (moveCanvas) {
+		canvas.animatePan({x: ping.x, y: ping.y});
+	}
+
+	layer.addChild(ping);
+}
+
+export class PingsLayer extends CanvasLayer {
 	constructor(Settings, onUserPinged = () => {}) {
 		super();
 
@@ -30,11 +118,11 @@ export default class PingsLayer extends CanvasLayer {
 		this.pings = {};
 
 		this.globalEventListeners = [
-			['keydown', this._onKeyDown],
-			['mousedown', this._onMouseDown],
-			['mouseup', this._onMouseUp],
+			['keydown', onKeyDown],
+			['mousedown', onMouseDown],
+			['mouseup', onMouseUp],
 		].map(([e, h]) => {
-			return [e, h.bind(this)];
+			return [e, h.bind(null, this)];
 		}).map(([e, h]) => {
 			return [
 				e,
@@ -45,130 +133,20 @@ export default class PingsLayer extends CanvasLayer {
 		});
 
 		this.stageListeners = [
-			['mouseover', this._onMouseOver],
-			['mouseout', this._onMouseOut],
+			['mouseover', onMouseOver],
+			['mouseout', onMouseOut],
 		].map(([e, h]) => {
-			return [e, h.bind(this)];
+			return [e, h.bind(null, this)];
 		});
 	}
 
 	destroy(options) {
-		this._unregisterListeners();
+		unregisterListeners(this);
 
 		super.destroy({
 			...options,
 			children: true
 		});
-	}
-
-	/**
-	 * @private
-	 */
-	_onMouseDown(e) {
-		if (!this._mouseOnCanvas) return;
-		const bindingType = 'mouse';
-		const shouldPingMove = isPressed(e, this.options.mouseButtonMove, bindingType);
-		const shouldPingNoMove = isPressed(e, this.options.mouseButton, bindingType);
-		if (!shouldPingMove && !shouldPingNoMove) return;
-
-		this._mouseDownStart = this._getMousePos();
-		this._mouseDownOption = 'mouseButton' + (shouldPingMove ? 'Move' : '');
-		this._mouseDownTimeout = setTimeout(() => {
-			if (this._mouseOnCanvas && isWithinPx(this._mouseDownStart, this._getMousePos(), 5)) {
-				this._triggerPing(shouldPingMove);
-			}
-		}, this.options.mouseButtonDuration);
-	}
-
-	/**
-	 * @private
-	 */
-	_onMouseUp(e) {
-		if (this._mouseDownTimeout === undefined) return;
-		if (!isPressed(e, this.options[this._mouseDownOption], 'mouse')) return;
-
-		clearTimeout(this._mouseDownTimeout);
-		this._mouseDownTimeout = undefined;
-	}
-
-	/**
-	 * @private
-	 */
-	_onMouseOver(e) {
-		this._mouseOnCanvas = true;
-	}
-
-	/**
-	 * @private
-	 */
-	_onMouseOut(e) {
-		this._mouseOnCanvas = false;
-	}
-
-	/**
-	 * @private
-	 */
-	_registerListeners() {
-		this.globalEventListeners.forEach((l) => window.addEventListener(...l));
-		this._registerStageListeners();
-	}
-
-	/**
-	 * @private
-	 */
-	_registerStageListeners() {
-		this.stageListeners.forEach(l => this.parent.on(...l));
-	}
-
-	/**
-	 * @private
-	 */
-	_unregisterListeners() {
-		this.globalEventListeners.forEach((l) => window.removeEventListener(...l));
-		this.stageListeners.forEach(l => this.parent.off(...l));
-	}
-
-	/**
-	 * @private
-	 */
-	_onKeyDown(e) {
-		if (!this._mouseOnCanvas) return;
-		const bindingType = 'keyboard';
-		const shouldPingMove = isPressed(e, this.options.keyMove, bindingType);
-		const shouldPingNoMove = isPressed(e, this.options.key, bindingType);
-		if (!shouldPingMove && !shouldPingNoMove) return;
-
-		this._triggerPing(shouldPingMove);
-	}
-
-	/**
-	 * @private
-	 */
-	_triggerPing(moveCanvas) {
-		let position = this._getMousePos();
-		this.onUserPinged({
-			position,
-			id: game.user._id,
-			moveCanvas
-		});
-		this.displayUserPing(position, game.user._id, moveCanvas);
-	}
-
-	/**
-	 * @private
-	 */
-	_getMousePos() {
-		const mouse = canvas.app.renderer.plugins.interaction.mouse.global;
-		const t = this.worldTransform;
-
-		function calcCoord(axis) {
-			return (mouse[axis] - t['t' + axis]) / canvas.stage.scale[axis];
-		}
-
-		return {
-			x: calcCoord('x'),
-			y: calcCoord('y')
-		};
 	}
 
 	/**
@@ -185,7 +163,7 @@ export default class PingsLayer extends CanvasLayer {
 		const text = this.options.showName ? user.name : undefined;
 		const ping = new Ping(position, senderId, text, getUserColor(user), this.options);
 		moveCanvas = moveCanvas && user.hasRole(this.options.minMovePermission);
-		this._displayPing(ping, moveCanvas)
+		displayPing(this, ping, moveCanvas)
 	}
 
 	/**
@@ -199,28 +177,17 @@ export default class PingsLayer extends CanvasLayer {
 	 */
 	displayTextPing(position, id, text, color, moveCanvas = false) {
 		const ping = new Ping(position, id, text, color, this.options);
-		this._displayPing(ping, moveCanvas);
-	}
-
-	/**
-	 * @private
-	 */
-	_displayPing(ping, moveCanvas = false) {
-		if (moveCanvas) {
-			canvas.animatePan({x: ping.x, y: ping.y});
-		}
-
-		this.addChild(ping);
+		displayPing(this, ping, moveCanvas);
 	}
 
 	removePing(id) {
 		this.children.filter((ping) => ping.id === id).forEach((ping) => ping.destroy());
 	}
+}
 
-	addToStage() {
-		canvas.pings = canvas.stage.addChild(this);
-		this._registerListeners();
-		// when canvas is drawn again, the listeners to the stage get cleared, so register them again
-		Hooks.on('canvasReady', () => this._registerStageListeners());
-	}
+export function addToStage(layer) {
+	canvas.pings = canvas.stage.addChild(layer);
+	registerListeners(layer);
+	// when canvas is drawn again, the listeners to the stage get cleared, so register them again
+	Hooks.on('canvasReady', () => registerStageListeners(layer));
 }
