@@ -91,8 +91,8 @@
 				return choices;
 			}, {});
 		register(KEYS.MINIMUM_PERMISSION, {
-			name: game.i18n.localize('PINGS.minMovePermission.title'),
-			hint: game.i18n.localize('PINGS.minMovePermission.hint'),
+			name: game.i18n.localize('PINGS.settings.minMovePermission.title'),
+			hint: game.i18n.localize('PINGS.settings.minMovePermission.hint'),
 			default: 1,
 			isSelect: true,
 			choices: choices,
@@ -108,90 +108,90 @@
 		const minMovePermission = registerMovePermissions();
 
 		register('mouseButton', {
-			name: game.i18n.localize('PINGS.mouseButton.title'),
-			hint: game.i18n.localize('PINGS.mouseButton.hint'),
+			name: game.i18n.localize('PINGS.settings.mouseButton.title'),
+			hint: game.i18n.localize('PINGS.settings.mouseButton.hint'),
 			default: 'LeftClick',
 			type: extraTypes.MouseButtonBinding
 		});
 		if (game.user.hasRole(minMovePermission)) {
 			register('mouseButtonMove', {
-				name: game.i18n.localize('PINGS.mouseButtonMove.title'),
-				hint: game.i18n.localize('PINGS.mouseButtonMove.hint'),
+				name: game.i18n.localize('PINGS.settings.mouseButtonMove.title'),
+				hint: game.i18n.localize('PINGS.settings.mouseButtonMove.hint'),
 				default: 'Shift + LeftClick',
 				type: extraTypes.MouseButtonBinding
 			});
 		}
 		register('mouseButtonDuration', {
-			name: game.i18n.localize('PINGS.mouseButtonDuration.title'),
-			hint: game.i18n.localize('PINGS.mouseButtonDuration.hint'),
+			name: game.i18n.localize('PINGS.settings.mouseButtonDuration.title'),
+			hint: game.i18n.localize('PINGS.settings.mouseButtonDuration.hint'),
 			default: 350,
 			type: Number
 		});
 		register('key', {
-			name: game.i18n.localize('PINGS.key.title'),
-			hint: game.i18n.localize('PINGS.key.hint'),
+			name: game.i18n.localize('PINGS.settings.key.title'),
+			hint: game.i18n.localize('PINGS.settings.key.hint'),
 			default: '',
 			type: extraTypes.KeyBinding
 		});
 		if (game.user.hasRole(minMovePermission)) {
 			register('keyMove', {
-				name: game.i18n.localize('PINGS.keyMove.title'),
-				hint: game.i18n.localize('PINGS.keyMove.hint'),
+				name: game.i18n.localize('PINGS.settings.keyMove.title'),
+				hint: game.i18n.localize('PINGS.settings.keyMove.hint'),
 				default: '',
 				type: extraTypes.KeyBinding
 			});
 		}
 		register('showName', {
-			name: game.i18n.localize('PINGS.showName.title'),
-			hint: game.i18n.localize('PINGS.showName.hint'),
+			name: game.i18n.localize('PINGS.settings.showName.title'),
+			hint: game.i18n.localize('PINGS.settings.showName.hint'),
 			default: true,
 			type: Boolean
 		});
 		register('image', {
-			name: game.i18n.localize('PINGS.image.title'),
-			hint: game.i18n.localize('PINGS.image.hint'),
+			name: game.i18n.localize('PINGS.settings.image.title'),
+			hint: game.i18n.localize('PINGS.settings.image.hint'),
 			default: '',
 			type: extraTypes.FilePickerImage
 		});
 		register('scale', {
-			name: game.i18n.localize('PINGS.scale.title'),
-			hint: game.i18n.localize('PINGS.scale.hint'),
+			name: game.i18n.localize('PINGS.settings.scale.title'),
+			hint: game.i18n.localize('PINGS.settings.scale.hint'),
 			default: 1,
 			type: Number
 		});
 		register('duration', {
-			name: game.i18n.localize('PINGS.duration.title'),
-			hint: game.i18n.localize('PINGS.duration.hint'),
+			name: game.i18n.localize('PINGS.settings.duration.title'),
+			hint: game.i18n.localize('PINGS.settings.duration.hint'),
 			default: 6,
 			type: Number
 		});
 		register('rotate', {
-			name: game.i18n.localize('PINGS.rotate.title'),
-			hint: game.i18n.localize('PINGS.rotate.hint'),
+			name: game.i18n.localize('PINGS.settings.rotate.title'),
+			hint: game.i18n.localize('PINGS.settings.rotate.hint'),
 			default: true,
 			type: Boolean
 		});
 		register('rotateSpeed', {
-			name: game.i18n.localize('PINGS.rotateSpeed.title'),
-			hint: game.i18n.localize('PINGS.rotateSpeed.hint'),
+			name: game.i18n.localize('PINGS.settings.rotateSpeed.title'),
+			hint: game.i18n.localize('PINGS.settings.rotateSpeed.hint'),
 			default: 6,
 			type: Number
 		});
 		register('sizeChange', {
-			name: game.i18n.localize('PINGS.sizeChange.title'),
-			hint: game.i18n.localize('PINGS.sizeChange.hint'),
+			name: game.i18n.localize('PINGS.settings.sizeChange.title'),
+			hint: game.i18n.localize('PINGS.settings.sizeChange.hint'),
 			default: true,
 			type: Boolean
 		});
 		register('sizeChangeAmount', {
-			name: game.i18n.localize('PINGS.sizeChangeAmount.title'),
-			hint: game.i18n.localize('PINGS.sizeChangeAmount.hint'),
+			name: game.i18n.localize('PINGS.settings.sizeChangeAmount.title'),
+			hint: game.i18n.localize('PINGS.settings.sizeChangeAmount.hint'),
 			default: 0.125,
 			type: Number
 		});
 		register('sizeChangeSpeed', {
-			name: game.i18n.localize('PINGS.sizeChangeSpeed.title'),
-			hint: game.i18n.localize('PINGS.sizeChangeSpeed.hint'),
+			name: game.i18n.localize('PINGS.settings.sizeChangeSpeed.title'),
+			hint: game.i18n.localize('PINGS.settings.sizeChangeSpeed.hint'),
 			default: 3,
 			type: Number
 		});
