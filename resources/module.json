@@ -7,7 +7,7 @@
 		"settings.js"
 	],
 	"esmodules": [
-		"pings.js"
+		"main.js"
 	],
 	"languages": [
 		{
