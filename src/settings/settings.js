@@ -29,7 +29,9 @@ export default async function setupSettings() {
 	return settings;
 }
 
-// Definitions
+function localize(key) {
+	return game.i18n.localize(Constants.PINGS + '.' + key);
+}
 
 function registerMovePermissionSetting(settings) {
 	const choices = Object.entries(CONST.USER_ROLES)
@@ -39,8 +41,8 @@ function registerMovePermissionSetting(settings) {
 			return choices;
 		}, {});
 	register(settings, Constants.MINIMUM_PERMISSION, {
-		name: game.i18n.localize('PINGS.settings.minMovePermission.title'),
-		hint: game.i18n.localize('PINGS.settings.minMovePermission.hint'),
+		name: localize('settings.minMovePermission.title'),
+		hint: localize('settings.minMovePermission.hint'),
 		default: 1,
 		isSelect: true,
 		choices: choices,
@@ -53,56 +55,56 @@ function registerMovePermissionSetting(settings) {
 function registerPingDisplaySettings(settings) {
 	const extraTypes = window.Azzu.SettingsTypes;
 	register(settings, 'showName', {
-		name: game.i18n.localize('PINGS.settings.showName.title'),
-		hint: game.i18n.localize('PINGS.settings.showName.hint'),
+		name: localize('settings.showName.title'),
+		hint: localize('settings.showName.hint'),
 		default: true,
 		type: Boolean
 	});
 	register(settings, 'image', {
-		name: game.i18n.localize('PINGS.settings.image.title'),
-		hint: game.i18n.localize('PINGS.settings.image.hint'),
+		name: localize('settings.image.title'),
+		hint: localize('settings.image.hint'),
 		default: '',
 		type: extraTypes.FilePickerImage
 	});
 	register(settings, 'scale', {
-		name: game.i18n.localize('PINGS.settings.scale.title'),
-		hint: game.i18n.localize('PINGS.settings.scale.hint'),
+		name: localize('settings.scale.title'),
+		hint: localize('settings.scale.hint'),
 		default: 1,
 		type: Number
 	});
 	register(settings, 'duration', {
-		name: game.i18n.localize('PINGS.settings.duration.title'),
-		hint: game.i18n.localize('PINGS.settings.duration.hint'),
+		name: localize('settings.duration.title'),
+		hint: localize('settings.duration.hint'),
 		default: 6,
 		type: Number
 	});
 	register(settings, 'rotate', {
-		name: game.i18n.localize('PINGS.settings.rotate.title'),
-		hint: game.i18n.localize('PINGS.settings.rotate.hint'),
+		name: localize('settings.rotate.title'),
+		hint: localize('settings.rotate.hint'),
 		default: true,
 		type: Boolean
 	});
 	register(settings, 'rotateSpeed', {
-		name: game.i18n.localize('PINGS.settings.rotateSpeed.title'),
-		hint: game.i18n.localize('PINGS.settings.rotateSpeed.hint'),
+		name: localize('settings.rotateSpeed.title'),
+		hint: localize('settings.rotateSpeed.hint'),
 		default: 6,
 		type: Number
 	});
 	register(settings, 'sizeChange', {
-		name: game.i18n.localize('PINGS.settings.sizeChange.title'),
-		hint: game.i18n.localize('PINGS.settings.sizeChange.hint'),
+		name: localize('settings.sizeChange.title'),
+		hint: localize('settings.sizeChange.hint'),
 		default: true,
 		type: Boolean
 	});
 	register(settings, 'sizeChangeAmount', {
-		name: game.i18n.localize('PINGS.settings.sizeChangeAmount.title'),
-		hint: game.i18n.localize('PINGS.settings.sizeChangeAmount.hint'),
+		name: localize('settings.sizeChangeAmount.title'),
+		hint: localize('settings.sizeChangeAmount.hint'),
 		default: 0.125,
 		type: Number
 	});
 	register(settings, 'sizeChangeSpeed', {
-		name: game.i18n.localize('PINGS.settings.sizeChangeSpeed.title'),
-		hint: game.i18n.localize('PINGS.settings.sizeChangeSpeed.hint'),
+		name: localize('settings.sizeChangeSpeed.title'),
+		hint: localize('settings.sizeChangeSpeed.hint'),
 		default: 3,
 		type: Number
 	});
@@ -111,35 +113,35 @@ function registerPingDisplaySettings(settings) {
 function registerPingBindsSettings(settings, minMovePermission) {
 	const extraTypes = window.Azzu.SettingsTypes;
 	register(settings, 'mouseButton', {
-		name: game.i18n.localize('PINGS.settings.mouseButton.title'),
-		hint: game.i18n.localize('PINGS.settings.mouseButton.hint'),
+		name: localize('settings.mouseButton.title'),
+		hint: localize('settings.mouseButton.hint'),
 		default: 'LeftClick',
 		type: extraTypes.MouseButtonBinding
 	});
 	if (game.user.hasRole(minMovePermission)) {
 		register(settings, 'mouseButtonMove', {
-			name: game.i18n.localize('PINGS.settings.mouseButtonMove.title'),
-			hint: game.i18n.localize('PINGS.settings.mouseButtonMove.hint'),
+			name: localize('settings.mouseButtonMove.title'),
+			hint: localize('settings.mouseButtonMove.hint'),
 			default: 'Shift + LeftClick',
 			type: extraTypes.MouseButtonBinding
 		});
 	}
 	register(settings, 'mouseButtonDuration', {
-		name: game.i18n.localize('PINGS.settings.mouseButtonDuration.title'),
-		hint: game.i18n.localize('PINGS.settings.mouseButtonDuration.hint'),
+		name: localize('settings.mouseButtonDuration.title'),
+		hint: localize('settings.mouseButtonDuration.hint'),
 		default: 350,
 		type: Number
 	});
 	register(settings, 'key', {
-		name: game.i18n.localize('PINGS.settings.key.title'),
-		hint: game.i18n.localize('PINGS.settings.key.hint'),
+		name: localize('settings.key.title'),
+		hint: localize('settings.key.hint'),
 		default: '',
 		type: extraTypes.KeyBinding
 	});
 	if (game.user.hasRole(minMovePermission)) {
 		register(settings, 'keyMove', {
-			name: game.i18n.localize('PINGS.settings.keyMove.title'),
-			hint: game.i18n.localize('PINGS.settings.keyMove.hint'),
+			name: localize('settings.keyMove.title'),
+			hint: localize('settings.keyMove.hint'),
 			default: '',
 			type: extraTypes.KeyBinding
 		});
