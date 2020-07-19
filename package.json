@@ -1,13 +1,6 @@
 {
 	"name": "pings",
-	"version": "1.2.9",
+	"version": "1.3.0",
 	"description": "Allows pinging on the map",
-	"author": "Azzurite#2004",
-	"scripts": {
-		"updateVersion": "node build/updateVersion.js",
-		"package": "npm run updateVersion && node build/package.js"
-	},
-	"devDependencies": {
-		"archiver": "^3.1.1"
-	}
+	"author": "Azzurite#2004"
 }
