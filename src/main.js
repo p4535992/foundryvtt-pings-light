@@ -1,6 +1,7 @@
 import {initNetwork, sendMessage, onMessageReceived, MESSAGES} from './net.js';
 import {initApi} from './api.js';
 import {PingsLayer, addToStage} from './pings-layer.js';
+import setupSettings from './settings/settings.js';
 
 
 async function preRequisitesReady() {
@@ -9,7 +10,9 @@ async function preRequisitesReady() {
 
 async function areSettingsLoaded() {
 	return new Promise(resolve => {
-		Hooks.once('pingsSettingsReady', resolve);
+		Hooks.once('ready', () => {
+			resolve(setupSettings());
+		});
 	});
 }
 
