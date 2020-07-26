@@ -44,6 +44,7 @@ function addNetworkBehavior(pingsGui) {
 	const pingsGui = createPingsGui(window,
 		canvas,
 		game,
+		Hooks,
 		Settings,
 		(...args) => new Ping(canvas, CONFIG, ...args),
 		sendMessage.bind(null, MESSAGES.USER_PING)

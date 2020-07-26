@@ -64,8 +64,7 @@ function createPingLines(ping, color) {
 	lines[0].x = lines[0].y = offset;
 	lines[1].x = -offset;
 	lines[1].y = offset;
-	lines[2].x = -offset;
-	lines[2].y = -offset;
+	lines[2].x = lines[2].y = -offset;
 	lines[3].x = offset;
 	lines[3].y = -offset;
 	return lines;

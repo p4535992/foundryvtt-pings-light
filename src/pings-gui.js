@@ -2,15 +2,6 @@ function isWithinPx(p1, p2, px) {
 	return Math.abs(p1.x - p2.x) <= px && Math.abs(p1.y - p2.y) <= px;
 }
 
-function isPressed(e, option, bindingType) {
-	const userIsMissingPermission = !option;
-	if (userIsMissingPermission) return false;
-
-	const types = window.Azzu.SettingsTypes;
-	const type = bindingType === 'mouse' ? types.MouseButtonBinding : types.KeyBinding;
-	return type.eventIsForBinding(e, option);
-}
-
 const DEFAULT_PING_COLOR = 0xAAAAAA;
 
 function getUserColor(user) {
@@ -33,10 +24,12 @@ function getMousePos(foundryCanvas) {
 
 /**
  * @typedef {PingOptions} GuiOptions
- * @property minMovePermission a permission from CONST.USER_ROLES for which user permissions are allowed to move the canvas
+ * @property minMovePermission a permission from CONST.USER_ROLES for which user permissions are allowed to move the
+ *     canvas
  * @property {boolean} showName if the user name should be shown under the ping
  * @property {string} mouseButton the settings-extender mouse button binding for which mouse button triggers a ping
- * @property {string} mouseButtonMove the settings-extender mouse button binding for which mouse button triggers a ping that moves the canvas
+ * @property {string} mouseButtonMove the settings-extender mouse button binding for which mouse button triggers a ping
+ *     that moves the canvas
  * @property {number} mouseButtonDuration how long the mouse button has to be held down in milliseconds
  * @property {string} key the settings-extender key binding for which key triggers a ping
  * @property {string} keyMove the settings-extender key binding for which key triggers a ping that moves the canvas
@@ -64,12 +57,13 @@ function getMousePos(foundryCanvas) {
  * @param window a JS window object
  * @param foundryCanvas
  * @param foundryGame
+ * @param foundryHooks
  * @param {GuiOptions} options
  * @param {PingCreateFunction} createPing
  * @param {function(UserPingedCallbackArg)} userPingedCallback
  * @returns {{displayUserPing: displayUserPing, displayTextPing: displayTextPing, removePing: removePing}}
  */
-export default function createPingsGui(window, foundryCanvas, foundryGame, options, createPing, userPingedCallback = () => {}) {
+export default function createPingsGui(window, foundryCanvas, foundryGame, foundryHooks, options, createPing, userPingedCallback = () => {}) {
 	let mouseOnCanvas = false;
 	function onMouseOverStage() {
 		mouseOnCanvas = true;
@@ -84,6 +78,14 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, optio
 		].forEach(l => foundryCanvas.stage.on(...l));
 	}
 
+	function isPressed(e, option, bindingType) {
+		const userIsMissingPermission = !option;
+		if (userIsMissingPermission) return false;
+
+		const types = window.Azzu.SettingsTypes;
+		const type = bindingType === 'mouse' ? types.MouseButtonBinding : types.KeyBinding;
+		return type.eventIsForBinding(e, option);
+	}
 	function onKeyDownGlobal(e) {
 		if (!mouseOnCanvas) return;
 		const bindingType = 'keyboard';
@@ -190,7 +192,7 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, optio
 
 	registerListeners();
 	// when canvas is drawn again, the listeners to the stage get cleared, so register them again
-	Hooks.on('canvasReady', () => registerStageListeners());
+	foundryHooks.on('canvasReady', () => registerStageListeners());
 
 	return {
 		displayTextPing,
