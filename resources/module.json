@@ -1,7 +1,7 @@
 {
 	"title": "Pings",
 	"minimumCoreVersion": "0.4.4",
-	"compatibleCoreVersion": "0.7.6",
+	"compatibleCoreVersion": "0.7.7",
 	"scripts": [
 		"settings-extender.js",
 		"settings.js"
