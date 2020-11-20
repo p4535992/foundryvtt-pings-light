@@ -1,3 +1,8 @@
+# 1.2.10
+
+* Fixes [#15](https://gitlab.com/foundry-azzurite/pings/-/issues/15), should no longer post a message in chat on every page load 
+* Fixes [#16](https://gitlab.com/foundry-azzurite/pings/-/issues/16), pings should be drawn above tokens again
+
 # 1.2.9
 
 * Update to latest version of settings-extender
