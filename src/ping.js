@@ -173,8 +173,10 @@ export default class Ping extends PIXI.Container {
 		this.foundryCanvas = foundryCanvas;
 		this.foundryConfig = foundryConfig;
 
-		// in foundry.js, the ControlsLayer has the highest zIndex
-		this.zIndex = ControlsLayer.layerOptions.zIndex + 1;
+		this.zIndex = Object.values(foundryCanvas.layers).reduce((highestZIndex, currentLayer) => {
+			const curZIndex = currentLayer.zIndex;
+			return highestZIndex > curZIndex ? highestZIndex : curZIndex;
+		}, 0) + 1;
 
 		this.x = pos.x;
 		this.y = pos.y;
