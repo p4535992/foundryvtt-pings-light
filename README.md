@@ -24,7 +24,7 @@ Hooks.once('pingsReady', (pingsApi) => {
 ```
 or `window.Azzu.Pings`.
 
-Look for available methods by reading the [source](https://gitlab.com/foundry-azzurite/pings/blob/master/src/pings.js) (look for `class PingsAPI`).
+Look for available methods by reading the [source](https://gitlab.com/foundry-azzurite/pings/-/blob/master/src/api.js) (all methods that are `export`ed).
 
 # Contributing
 
