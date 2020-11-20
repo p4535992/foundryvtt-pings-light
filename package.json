@@ -1,11 +1,16 @@
 {
 	"name": "pings",
-	"version": "1.2.9",
-	"scripts": {
-		"updateVersion": "node build/updateVersion.js",
-		"package": "npm run updateVersion && node build/package.js"
-	},
+	"version": "1.2.10",
+	"description": "Allows pinging on the map",
+	"author": "Azzurite#2004",
 	"devDependencies": {
-		"archiver": "^3.1.1"
-	}
+		"jasmine": "^3.6.1",
+		"karma": "^5.1.0",
+		"karma-firefox-launcher": "^1.3.0",
+		"karma-jasmine": "^3.3.1"
+	},
+	"scripts": {
+		"test": "node ./node_modules/karma/bin/karma start"
+	},
+	"dependencies": {}
 }
