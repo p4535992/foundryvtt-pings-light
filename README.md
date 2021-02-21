@@ -2,9 +2,10 @@ A [FoundryVTT](http://foundryvtt.com/) module to add the ability to ping on the 
 
 Inspired by [Mörill's Pointer](https://gitlab.com/moerills-fvtt-modules/pointer) module, but I didn't like the pointer and only wanted the pings, and I wanted to learn module development anyway.
 
-<div style="display: flex; justify-content: center; align-items: center">
-<strong>Please support me on</strong> <img src="https://azzurite.tv/patreon.png" width="120" height="33" />
-</div>
+<a href="https://www.patreon.com/azzu">
+<strong>Please support me on</strong><br />
+<img src="https://azzurite.tv/patreon.png" height="40" />
+</a>
 
 
 # Features
