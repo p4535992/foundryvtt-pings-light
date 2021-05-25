@@ -20,6 +20,12 @@
 		    "path": "languages/pt-BR.json"
 		}
 	],
+	"dependencies": [
+		{
+			"name": "settings-extender",
+			"manifest": "https://gitlab.com/foundry-azzurite/settings-extender/-/jobs/artifacts/test-tag/raw/dist/settings-extender/module.json?job=build"
+		}
+	],
 	"socket": true,
 	"url": "https://gitlab.com/foundry-azzurite/pings"
 }
