@@ -1,3 +1,8 @@
+# 1.2.11
+
+* Compatibililty with 0.8.5
+* Move settings-extender to module dependency
+
 # 1.2.10
 
 * Fixes [#15](https://gitlab.com/foundry-azzurite/pings/-/issues/15), should no longer post a message in chat on every page load 

@@ -1,5 +1,6 @@
 import Constants from '../constants.js';
 import {migrate, MigrationResult} from './migration.js';
+import extraTypes from '../../settings-extender/settings-extender.js'
 
 window.Azzu = window.Azzu || {};
 
@@ -52,7 +53,7 @@ function registerPingsSettings(foundryGame, settings) {
 		const get = () => foundryGame.settings.get(Constants.PINGS, key);
 		const set = (val) => foundryGame.settings.set(Constants.PINGS, key, val);
 		let getset;
-		if (type.parse && Object.values(window.Azzu.SettingsTypes).includes(type)) {
+		if (type.parse && Object.values(extraTypes).includes(type)) {
 			getset = {
 				get: () => type.parse(get()),
 				set: (val) => set(type.format(val))
@@ -86,7 +87,6 @@ function registerPingsSettings(foundryGame, settings) {
 	}
 
 	function registerPingDisplaySettings(settings) {
-		const extraTypes = window.Azzu.SettingsTypes;
 		register(settings, 'showName', {
 			name: localize('settings.showName.title'),
 			hint: localize('settings.showName.hint'),
@@ -144,7 +144,6 @@ function registerPingsSettings(foundryGame, settings) {
 	}
 
 	function registerPingBindsSettings(settings, minMovePermission) {
-		const extraTypes = window.Azzu.SettingsTypes;
 		register(settings, 'mouseButton', {
 			name: localize('settings.mouseButton.title'),
 			hint: localize('settings.mouseButton.hint'),

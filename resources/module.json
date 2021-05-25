@@ -1,7 +1,7 @@
 {
 	"title": "Pings",
 	"minimumCoreVersion": "0.4.4",
-	"compatibleCoreVersion": "0.7.9",
+	"compatibleCoreVersion": "0.8.5",
 	"scripts": [
 		"settings-extender.js",
 		"settings.js"
@@ -18,6 +18,11 @@
 		    "lang": "pt-BR",
 		    "name": "Português (Brasil)",
 		    "path": "languages/pt-BR.json"
+		}
+	],
+	"dependencies": [
+		{
+			"name": "settings-extender"
 		}
 	],
 	"socket": true,
