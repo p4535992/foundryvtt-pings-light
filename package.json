@@ -1,6 +1,6 @@
 {
 	"name": "pings",
-	"version": "1.2.11",
+	"version": "1.2.11+0.8.6",
 	"description": "Allows pinging on the map",
 	"author": "Azzurite#2004",
 	"devDependencies": {
@@ -11,6 +11,5 @@
 	},
 	"scripts": {
 		"test": "node ./node_modules/karma/bin/karma start"
-	},
-	"dependencies": {}
+	}
 }
