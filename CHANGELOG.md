@@ -1,3 +1,7 @@
+# 1.2.11+0.8.6
+
+* Update compatible core version to 0.8.6
+
 # 1.2.11
 
 * Compatibililty with 0.8.5
