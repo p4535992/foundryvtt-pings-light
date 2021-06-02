@@ -1,3 +1,7 @@
+# 1.2.12+0.8.6
+
+* Add japanese translation
+
 # 1.2.11+0.8.6
 
 * Update compatible core version to 0.8.6
