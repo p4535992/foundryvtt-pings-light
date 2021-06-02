@@ -17,7 +17,7 @@ suffix="?job=build"
 
 distributionJson() {
   compatibleCoreVersion=$(jq -r ".version" ${base}/package.json | sed "s/.*+//")
-  manifest="${baseUrl}${module}/module.json${suffix}",
+  manifest="${baseUrl}${module}/module.json${suffix}"
   download="${baseUrl}${module}.zip${suffix}"
   echo "{\
           compatibleCoreVersion: \"$compatibleCoreVersion\",\
