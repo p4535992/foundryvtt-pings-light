@@ -1,3 +1,7 @@
+# 1.2.13+v9
+
+* Compatibility with v9 ([#22](https://gitlab.com/foundry-azzurite/pings/-/issues/22))
+
 # 1.2.12+0.8.6
 
 * Add japanese translation

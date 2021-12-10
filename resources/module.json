@@ -1,6 +1,6 @@
 {
 	"title": "Pings",
-	"minimumCoreVersion": "0.6.6",
+	"minimumCoreVersion": "9",
 	"esmodules": [
 		"main.js"
 	],
