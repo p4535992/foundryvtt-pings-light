@@ -1,3 +1,5 @@
+import {MouseButtonBinding, KeyBinding} from '../settings-extender/settings-extender.js';
+
 function isWithinPx(p1, p2, px) {
 	return Math.abs(p1.x - p2.x) <= px && Math.abs(p1.y - p2.y) <= px;
 }
@@ -82,8 +84,7 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 		const userIsMissingPermission = !option;
 		if (userIsMissingPermission) return false;
 
-		const types = window.Azzu.SettingsTypes;
-		const type = bindingType === 'mouse' ? types.MouseButtonBinding : types.KeyBinding;
+		const type = bindingType === 'mouse' ? MouseButtonBinding : KeyBinding;
 		return type.eventIsForBinding(e, option);
 	}
 	function onKeyDownGlobal(e) {

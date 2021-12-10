@@ -1,10 +1,6 @@
 {
 	"title": "Pings",
 	"minimumCoreVersion": "0.6.6",
-	"scripts": [
-		"settings-extender.js",
-		"settings.js"
-	],
 	"esmodules": [
 		"main.js"
 	],

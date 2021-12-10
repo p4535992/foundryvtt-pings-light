@@ -1,6 +1,6 @@
 import Constants from '../constants.js';
 import {migrate, MigrationResult} from './migration.js';
-import extraTypes from '../../settings-extender/settings-extender.js'
+import extraTypes from '../../settings-extender/settings-extender.js';
 
 window.Azzu = window.Azzu || {};
 
