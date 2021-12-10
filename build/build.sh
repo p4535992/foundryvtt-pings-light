@@ -11,7 +11,7 @@ cp -r ${base}/src/* ${module}
 cp -r ${base}/resources/languages ${module}
 find ${module} -name "*.test.js" -type f -delete
 
-build_ref=${CI_BUILD_REF_NAME}
+build_ref=${CI_COMMIT_REF_NAME}
 baseUrl="https://gitlab.com/foundry-azzurite/${module}/-/jobs/artifacts/${build_ref}/raw/dist/"
 suffix="?job=build"
 
