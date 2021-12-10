@@ -150,10 +150,10 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 		let position = getMousePos(foundryCanvas);
 		userPingedCallback({
 			position,
-			id: foundryGame.user._id,
+			id: foundryGame.user.id,
 			moveCanvas
 		});
-		displayUserPing(position, foundryGame.user._id, moveCanvas);
+		displayUserPing(position, foundryGame.user.id, moveCanvas);
 	}
 
 	/**

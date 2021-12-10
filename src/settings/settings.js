@@ -23,7 +23,7 @@ export default async function setupSettings(foundryGame) {
 			content: `You have updated the Pings module to at least v${migrationResult}. The module settings ` +
 				'structure has changed, so the settings were successfully migrated. You may have to reload this ' +
 				'page for the settings menu to work correctly.',
-			whisper: [game.user._id],
+			whisper: [game.user.id],
 			timestamp: Date.now()
 		});
 	}
