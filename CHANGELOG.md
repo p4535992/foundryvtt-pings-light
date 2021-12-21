@@ -1,3 +1,8 @@
+# 1.3.0
+
+* Remove semver build metadata from version so Foundry version comparison doesn't shit itself
+* No changes otherwise at all
+
 # 1.2.13+v9
 
 * Compatibility with v9 ([#22](https://gitlab.com/foundry-azzurite/pings/-/issues/22))

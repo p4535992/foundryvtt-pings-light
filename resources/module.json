@@ -1,6 +1,7 @@
 {
 	"title": "Pings",
 	"minimumCoreVersion": "9",
+	"compatibleCoreVersion": "9",
 	"esmodules": [
 		"main.js"
 	],
