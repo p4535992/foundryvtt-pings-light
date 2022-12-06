@@ -1,7 +1,10 @@
 {
 	"title": "Pings",
-	"minimumCoreVersion": "9",
-	"compatibleCoreVersion": "9",
+	"compatibility": {
+		"minimum": "9",
+		"verified": "10",
+		"maximum": "10"
+	},
 	"esmodules": [
 		"main.js"
 	],
@@ -22,11 +25,16 @@
 		    "path": "languages/ja.json"
 		}
 	],
-	"dependencies": [
-		{
-			"name": "settings-extender"
-		}
-	],
+	"relationships": {
+		"requires": [
+			{
+				"id": "settings-extender"
+			},
+			{
+				"id": "lib-wrapper"
+			}
+		]
+	},
 	"socket": true,
 	"url": "https://gitlab.com/foundry-azzurite/pings"
 }

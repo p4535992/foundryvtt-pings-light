@@ -24,7 +24,19 @@ distributionJson() {
         }"
 }
 
-jq -s "(.[0] | { name, description, author, version }) * .[1] * $(distributionJson)" ${base}/package.json ${base}/resources/module.json > ${module}/module.json
+jq -s "( \
+         .[0] | \
+         { name, description, author, version } | \
+         .id = .name | \
+         del(.name) |\
+         .authors = [ .author ] |\
+         del(.author) \
+       ) \
+       * .[1] \
+       * $(distributionJson)" \
+      ${base}/package.json \
+      ${base}/resources/module.json \
+      > ${module}/module.json
 
 zip ${module}.zip -r ${module}
 cd -
