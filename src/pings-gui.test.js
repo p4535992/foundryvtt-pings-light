@@ -63,7 +63,7 @@ describe(`pings-gui`, () => {
 			animatePan: jasmine.createSpy(`canvas.animatePan`)
 		};
 		const mockUser = {
-			_id: 0,
+			id: 0,
 			color: '',
 			hasRole: jasmine.createSpy(`user.hasRole`)
 		};

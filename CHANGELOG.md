@@ -1,3 +1,16 @@
+# 1.3.0
+
+* Remove semver build metadata from version so Foundry version comparison doesn't shit itself
+* No changes otherwise at all
+
+# 1.2.13+v9
+
+* Compatibility with v9 ([#22](https://gitlab.com/foundry-azzurite/pings/-/issues/22))
+
+# 1.2.12+0.8.6
+
+* Add japanese translation
+
 # 1.2.11+0.8.6
 
 * Update compatible core version to 0.8.6

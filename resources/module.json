@@ -1,30 +1,40 @@
 {
 	"title": "Pings",
-	"minimumCoreVersion": "0.6.6",
-	"compatibleCoreVersion": "0.8.6",
-	"scripts": [
-		"settings-extender.js",
-		"settings.js"
-	],
+	"compatibility": {
+		"minimum": "9",
+		"verified": "10",
+		"maximum": "10"
+	},
 	"esmodules": [
 		"main.js"
 	],
 	"languages": [
 		{
 			"lang": "en",
+			"name": "English",
 			"path": "languages/en.json"
 		},
 		{
 		    "lang": "pt-BR",
 		    "name": "Português (Brasil)",
 		    "path": "languages/pt-BR.json"
-		}
-	],
-	"dependencies": [
+		},
 		{
-			"name": "settings-extender"
+		    "lang": "ja",
+		    "name": "日本語",
+		    "path": "languages/ja.json"
 		}
 	],
+	"relationships": {
+		"requires": [
+			{
+				"id": "settings-extender"
+			},
+			{
+				"id": "lib-wrapper"
+			}
+		]
+	},
 	"socket": true,
 	"url": "https://gitlab.com/foundry-azzurite/pings"
 }

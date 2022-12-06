@@ -17,7 +17,7 @@ function runMessageCallbacks(message, pingData) {
 
 export function initNetwork() {
 	game.socket.on(SOCKET_NAME, (data) => {
-		if (canvas.scene._id !== data.sceneId) {
+		if (canvas.scene.id !== data.sceneId) {
 			return;
 		}
 
@@ -44,7 +44,7 @@ export function sendMessage(message, pingData) {
 	});
 	emit({
 		message: message.name,
-		sceneId: canvas.scene._id,
+		sceneId: canvas.scene.id,
 		pingData
 	});
 }

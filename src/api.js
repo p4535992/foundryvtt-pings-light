@@ -45,11 +45,11 @@ function throwErrorNoColor(color) {
  * Perform a ping on the canvas as if the given user had performed a ping for all users in the game.
  *
  * @param {{x: Number, y: Number}} position the position of the ping on the canvas
- * @param {String} [userId=game.user._id] userId of the user the ping should originate from
+ * @param {String} [userId=game.user.id] userId of the user the ping should originate from
  * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
  * @return {*} a ping id to be able to remove the ping with
  */
-export function perform(position, userId = game.user._id, moveCanvas = false) {
+export function perform(position, userId = game.user.id, moveCanvas = false) {
 	throwOnUserMissing(userId);
 	throwErrorNoNumber(position.x, `position.x`);
 	throwErrorNoNumber(position.y, `position.y`);
@@ -66,11 +66,11 @@ export function perform(position, userId = game.user._id, moveCanvas = false) {
  * Shows a ping on the canvas as if the given user had sent a ping. Does not send the ping to any other player.
  *
  * @param {{x: Number, y: Number}} position the position of the ping on the canvas
- * @param {String} [userId=game.user._id] userId of the user the ping should originate from
+ * @param {String} [userId=game.user.id] userId of the user the ping should originate from
  * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
  * @return {*} a ping id to be able to remove the ping with
  */
-export function show(position, userId = game.user._id, moveCanvas = false) {
+export function show(position, userId = game.user.id, moveCanvas = false) {
 	throwOnUserMissing(userId);
 	throwErrorNoNumber(position.x, `position.x`);
 	throwErrorNoNumber(position.y, `position.y`);
@@ -82,10 +82,10 @@ export function show(position, userId = game.user._id, moveCanvas = false) {
  * Sends a ping to other players as if it was triggered by the given user.
  *
  * @param {{x: Number, y: Number}} position the position of the ping on the canvas
- * @param {String} [userId=game.user._id] userId of the user the ping should originate from
+ * @param {String} [userId=game.user.id] userId of the user the ping should originate from
  * @param {Boolean} [moveCanvas=false] if the ping should also move the canvas so the ping is centered.
  */
-export function send(position, userId = game.user._id, moveCanvas = false) {
+export function send(position, userId = game.user.id, moveCanvas = false) {
 	throwOnUserMissing(userId);
 	throwErrorNoNumber(position.x, `position.x`);
 	throwErrorNoNumber(position.y, `position.y`);
