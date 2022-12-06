@@ -1,3 +1,9 @@
+# 1.4.0
+
+* Compatibility for Foundry 10
+* Disables Foundry 10 built-in ping functionality
+* As parity for Foundry 10 ping features, now displays an arrow for off-screen pings
+
 # 1.3.0
 
 * Remove semver build metadata from version so Foundry version comparison doesn't shit itself
