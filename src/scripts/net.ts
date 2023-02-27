@@ -1,5 +1,6 @@
+import CONSTANTS from "./constants";
 
-const SOCKET_NAME= 'module.pings';
+const SOCKET_NAME= `module.${CONSTANTS.MODULE_NAME}`;
 
 const callbacks = {};
 
@@ -16,8 +17,8 @@ function runMessageCallbacks(message, pingData) {
 }
 
 export function initNetwork() {
-	game.socket.on(SOCKET_NAME, (data) => {
-		if (canvas.scene.id !== data.sceneId) {
+	game.socket?.on(SOCKET_NAME, (data) => {
+		if (canvas.scene?.id !== data.sceneId) {
 			return;
 		}
 
@@ -32,11 +33,11 @@ export function onMessageReceived(message, func) {
 
 
 function emit(...args) {
-	game.socket.emit(SOCKET_NAME, ...args)
+	game.socket?.emit(SOCKET_NAME, ...args)
 }
 
 
-export function sendMessage(message, pingData) {
+export function sendMessage(message, pingData):any {
 	message.dataProperties.forEach(prop => {
 		if (!pingData.hasOwnProperty(prop)) {
 			throw new Error(`Missing data for message "${message.name}": ${prop}`);
@@ -44,7 +45,7 @@ export function sendMessage(message, pingData) {
 	});
 	emit({
 		message: message.name,
-		sceneId: canvas.scene.id,
+		sceneId: canvas.scene?.id,
 		pingData
 	});
 }

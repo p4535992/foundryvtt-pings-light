@@ -1,5 +1,6 @@
-import {MouseButtonBinding, KeyBinding} from '../settings-extender/settings-extender.js';
-import Constants from './constants.js';
+// import {MouseButtonBinding, KeyBinding} from '../settings-extender/settings-extender.js';
+// import Constants from './constants.js';
+import { KeyBinding, MouseButtonBinding } from "./lib/settings-extender-light";
 
 function isWithinPx(p1, p2, px) {
 	return Math.abs(p1.x - p2.x) <= px && Math.abs(p1.y - p2.y) <= px;
@@ -67,7 +68,7 @@ function getMousePos(foundryCanvas) {
  * @param {function(UserPingedCallbackArg)} userPingedCallback
  * @returns {{displayUserPing: displayUserPing, displayTextPing: displayTextPing, removePing: removePing}}
  */
-export default function createPingsGui(window, foundryCanvas, foundryGame, foundryHooks, options, localize, createPing, userPingedCallback = () => {}) {
+export default function createPingsGui(window, foundryCanvas, foundryGame, foundryHooks, options, localize, createPing, userPingedCallback = () => <any>{}) {
 	let mouseOnCanvas = false;
 	function onMouseOverStage() {
 		mouseOnCanvas = true;
@@ -89,6 +90,7 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 		const type = bindingType === 'mouse' ? MouseButtonBinding : KeyBinding;
 		return type.eventIsForBinding(e, option);
 	}
+
 	function onKeyDownGlobal(e) {
 		if (!mouseOnCanvas) return;
 		const bindingType = 'keyboard';
@@ -121,13 +123,18 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 			if (!isPressed(e, options[mouseDownOption], 'mouse')) return;
 
 			clearTimeout(mouseDownTimeout);
-		}, {once: true});
+		},
+        //@ts-ignore
+        {once: true});
 	}
 	function registerGlobalListeners() {
 		[
 			['keydown', onKeyDownGlobal],
 			['mousedown', onMouseDownGlobal],
-		].forEach((l) => addWindowListener(...l));
+		].forEach((l) => {
+            //@ts-ignore
+            addWindowListener(...l)
+        });
 	}
 
 	function registerListeners() {
@@ -140,7 +147,7 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 		if (moveCanvas) {
 			foundryCanvas.animatePan(pos);
 		} else if (foundryCanvas.isOffscreen(pos)) {
-			foundryCanvas.controls.drawOffscreenPing(pos, { 
+			foundryCanvas.controls.drawOffscreenPing(pos, {
 				style: "arrow",
 				color: ping.color,
 				duration: ping.options.duration * 1000
@@ -157,10 +164,11 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 	 */
 	function triggerPing(moveCanvas) {
 		let position = getMousePos(foundryCanvas);
+        //@ts-ignore
 		userPingedCallback({
-			position,
-			id: foundryGame.user.id,
-			moveCanvas
+			position: position,
+			id: foundryGame.user?.id,
+			moveCanvas: moveCanvas
 		});
 		displayUserPing(position, foundryGame.user.id, moveCanvas);
 	}
@@ -201,7 +209,9 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 	}
 
 	function disableFoundryPings() {
+        //@ts-ignore
 		libWrapper.register(Constants.PINGS, 'ControlsLayer.prototype._onLongPress', () => {}, 'OVERRIDE');
+        //@ts-ignore
 		libWrapper.register(Constants.PINGS, 'KeybindingsConfig.prototype._addMouseControlsReference', (wrapped, ...args) => {
 			wrapped(...args);
 			const categories = args[0];
@@ -218,7 +228,7 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 			console.log(coreMouseCategoryData)
 		}, 'MIXED');
 	}
-	
+
 	disableFoundryPings();
 	registerListeners();
 	// when canvas is drawn again, the listeners to the stage get cleared, so register them again

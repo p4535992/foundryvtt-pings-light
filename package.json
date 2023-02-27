@@ -1,9 +1,9 @@
 {
   "name": "mountup",
-  "title": "FoundryVTT Mount Up!",
-  "description": "Allows tokens to carry or be carried by other tokens. This is completely system agnostic, and fully customizable to fit right into your game.",
-  "version": "3.4.2",
-  "main": "mountup.js",
+  "title": "Pings",
+  "description": "Click and hold with a mouse button or press a keyboard key to perform a ping.",
+  "version": "4.0.0",
+  "main": "main.js",
   "scripts": {
     "publish": "gulp publish --update",
     "package": "gulp package",
