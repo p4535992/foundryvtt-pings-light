@@ -4,9 +4,7 @@ import { sendMessage, MESSAGES } from "./net";
 import Ping from "./ping";
 import createPingsGui from "./pings-gui";
 
-export const initHooks = () => {
-
-};
+export const initHooks = () => {};
 
 export const setupHooks = async (): Promise<void> => {
 	//@ts-ignore
@@ -14,18 +12,18 @@ export const setupHooks = async (): Promise<void> => {
 };
 
 export const readyHooks = async () => {
-
-    const pingsGui = createPingsGui(window,
+	const pingsGui = createPingsGui(
+		window,
 		canvas,
 		game,
 		Hooks,
 		Settings,
 		localize,
-        //@ts-ignore
+		//@ts-ignore
 		(...args) => new Ping(canvas, CONFIG, ...args),
 		sendMessage.bind(null, MESSAGES.USER_PING)
 	);
 	addNetworkBehavior(pingsGui);
 	const api = initApi(pingsGui);
-	Hooks.callAll('pingsReady', api);
+	Hooks.callAll("pingsReady", api);
 };

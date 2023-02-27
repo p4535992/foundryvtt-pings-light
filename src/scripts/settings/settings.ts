@@ -2,7 +2,6 @@
 // import {migrate, MigrationResult} from './migration.ts.bak';
 // import extraTypes from '../../settings-extender/settings-extender.js';
 
-
 import CONSTANTS from "../constants";
 import { localize } from "../lib/lib";
 import { KeyBinding, MouseButtonBinding } from "../lib/settings-extender-light";
@@ -34,7 +33,6 @@ import { KeyBinding, MouseButtonBinding } from "../lib/settings-extender-light";
 // 	}
 // 	return settings;
 // }
-
 
 // function registerPingsSettings(foundryGame, settings, localize) {
 
@@ -187,151 +185,149 @@ import { KeyBinding, MouseButtonBinding } from "../lib/settings-extender-light";
 // }
 
 export const registerSettings = function () {
+	const choices = Object.entries(CONST.USER_ROLES)
+		.filter(([key, val]) => val !== 0)
+		.reduce((choices, [permission, val]) => {
+			choices[val] = permission;
+			return choices;
+		}, {});
+	game.settings.register(CONSTANTS.MODULE_NAME, CONSTANTS.MINIMUM_PERMISSION, {
+		name: localize("settings.minMovePermission.title"),
+		hint: localize("settings.minMovePermission.hint"),
+		config: true,
+		default: 1,
+		// isSelect: true,
+		choices: <any>choices,
+		type: Number,
+		scope: "world",
+	});
 
-    const choices = Object.entries(CONST.USER_ROLES)
-    .filter(([key, val]) => val !== 0)
-    .reduce((choices, [permission, val]) => {
-        choices[val] = permission;
-        return choices;
-    }, {});
-    game.settings.register(CONSTANTS.MODULE_NAME, CONSTANTS.MINIMUM_PERMISSION, {
-        name: localize('settings.minMovePermission.title'),
-        hint: localize('settings.minMovePermission.hint'),
-        config: true,
-        default: 1,
-        // isSelect: true,
-        choices: <any>choices,
-        type: Number,
-        scope: "world"
-    });
+	const minMovePermission = <any>game.settings.get(CONSTANTS.MODULE_NAME, CONSTANTS.MINIMUM_PERMISSION);
 
-    const minMovePermission = <any>game.settings.get(CONSTANTS.MODULE_NAME,CONSTANTS.MINIMUM_PERMISSION);
+	// =====
 
-    // =====
+	game.settings.register(CONSTANTS.MODULE_NAME, "showName", {
+		name: localize("settings.showName.title"),
+		hint: localize("settings.showName.hint"),
+		config: true,
+		default: true,
+		scope: "client",
+		type: Boolean,
+	});
+	game.settings.register(CONSTANTS.MODULE_NAME, "image", {
+		name: localize("settings.image.title"),
+		hint: localize("settings.image.hint"),
+		config: true,
+		//@ts-ignore
+		default: "",
+		scope: "client",
+		type: FilePicker,
+	});
+	game.settings.register(CONSTANTS.MODULE_NAME, "scale", {
+		name: localize("settings.scale.title"),
+		hint: localize("settings.scale.hint"),
+		config: true,
+		default: 1,
+		scope: "client",
+		type: Number,
+	});
+	game.settings.register(CONSTANTS.MODULE_NAME, "duration", {
+		name: localize("settings.duration.title"),
+		hint: localize("settings.duration.hint"),
+		config: true,
+		default: 6,
+		scope: "client",
+		type: Number,
+	});
+	game.settings.register(CONSTANTS.MODULE_NAME, "rotate", {
+		name: localize("settings.rotate.title"),
+		hint: localize("settings.rotate.hint"),
+		config: true,
+		default: true,
+		scope: "client",
+		type: Boolean,
+	});
+	game.settings.register(CONSTANTS.MODULE_NAME, "rotateSpeed", {
+		name: localize("settings.rotateSpeed.title"),
+		hint: localize("settings.rotateSpeed.hint"),
+		config: true,
+		default: 6,
+		scope: "client",
+		type: Number,
+	});
+	game.settings.register(CONSTANTS.MODULE_NAME, "sizeChange", {
+		name: localize("settings.sizeChange.title"),
+		hint: localize("settings.sizeChange.hint"),
+		config: true,
+		default: true,
+		scope: "client",
+		type: Boolean,
+	});
+	game.settings.register(CONSTANTS.MODULE_NAME, "sizeChangeAmount", {
+		name: localize("settings.sizeChangeAmount.title"),
+		hint: localize("settings.sizeChangeAmount.hint"),
+		config: true,
+		default: 0.125,
+		scope: "client",
+		type: Number,
+	});
+	game.settings.register(CONSTANTS.MODULE_NAME, "sizeChangeSpeed", {
+		name: localize("settings.sizeChangeSpeed.title"),
+		hint: localize("settings.sizeChangeSpeed.hint"),
+		config: true,
+		default: 3,
+		scope: "client",
+		type: Number,
+	});
 
-    game.settings.register(CONSTANTS.MODULE_NAME, 'showName', {
-        name: localize('settings.showName.title'),
-        hint: localize('settings.showName.hint'),
-        config: true,
-        default: true,
-        scope: 'client',
-        type: Boolean
-    });
-    game.settings.register(CONSTANTS.MODULE_NAME, 'image', {
-        name: localize('settings.image.title'),
-        hint: localize('settings.image.hint'),
-        config: true,
-        //@ts-ignore
-        default: '',
-        scope: 'client',
-        type: FilePicker
-    });
-    game.settings.register(CONSTANTS.MODULE_NAME, 'scale', {
-        name: localize('settings.scale.title'),
-        hint: localize('settings.scale.hint'),
-        config: true,
-        default: 1,
-        scope: 'client',
-        type: Number
-    });
-    game.settings.register(CONSTANTS.MODULE_NAME, 'duration', {
-        name: localize('settings.duration.title'),
-        hint: localize('settings.duration.hint'),
-        config: true,
-        default: 6,
-        scope: 'client',
-        type: Number
-    });
-    game.settings.register(CONSTANTS.MODULE_NAME, 'rotate', {
-        name: localize('settings.rotate.title'),
-        hint: localize('settings.rotate.hint'),
-        config: true,
-        default: true,
-        scope: 'client',
-        type: Boolean
-    });
-    game.settings.register(CONSTANTS.MODULE_NAME, 'rotateSpeed', {
-        name: localize('settings.rotateSpeed.title'),
-        hint: localize('settings.rotateSpeed.hint'),
-        config: true,
-        default: 6,
-        scope: 'client',
-        type: Number
-    });
-    game.settings.register(CONSTANTS.MODULE_NAME, 'sizeChange', {
-        name: localize('settings.sizeChange.title'),
-        hint: localize('settings.sizeChange.hint'),
-        config: true,
-        default: true,
-        scope: 'client',
-        type: Boolean
-    });
-    game.settings.register(CONSTANTS.MODULE_NAME, 'sizeChangeAmount', {
-        name: localize('settings.sizeChangeAmount.title'),
-        hint: localize('settings.sizeChangeAmount.hint'),
-        config: true,
-        default: 0.125,
-        scope: 'client',
-        type: Number
-    });
-    game.settings.register(CONSTANTS.MODULE_NAME, 'sizeChangeSpeed', {
-        name: localize('settings.sizeChangeSpeed.title'),
-        hint: localize('settings.sizeChangeSpeed.hint'),
-        config: true,
-        default: 3,
-        scope: 'client',
-        type: Number
-    });
+	// =====
 
-    // =====
-
-    game.settings.register(CONSTANTS.MODULE_NAME, 'mouseButton', {
-        name: localize('settings.mouseButton.title'),
-        hint: localize('settings.mouseButton.hint'),
-        config: true,
-        default: 'LeftClick',
-        scope: 'client',
-        type: <any>MouseButtonBinding
-    });
-    if (game.user?.hasRole(minMovePermission)) {
-        game.settings.register(CONSTANTS.MODULE_NAME, 'mouseButtonMove', {
-            name: localize('settings.mouseButtonMove.title'),
-            hint: localize('settings.mouseButtonMove.hint'),
-            config: true,
-            default: 'Shift + LeftClick',
-            scope: 'client',
-            type: <any>MouseButtonBinding
-        });
-    }
-    game.settings.register(CONSTANTS.MODULE_NAME, 'mouseButtonDuration', {
-        name: localize('settings.mouseButtonDuration.title'),
-        hint: localize('settings.mouseButtonDuration.hint'),
-        config: true,
-        default: 350,
-        scope: 'client',
-        type: Number
-    });
-    game.settings.register(CONSTANTS.MODULE_NAME, 'key', {
-        name: localize('settings.key.title'),
-        hint: localize('settings.key.hint'),
-        config: true,
-        default: '',
-        scope: 'client',
-        type: <any>KeyBinding
-    });
-    if (game.user?.hasRole(minMovePermission)) {
-        game.settings.register(CONSTANTS.MODULE_NAME, 'keyMove', {
-            name: localize('settings.keyMove.title'),
-            hint: localize('settings.keyMove.hint'),
-            config: true,
-            default: '',
-            scope: 'client',
-            type: <any>KeyBinding
-        });
-    }
+	game.settings.register(CONSTANTS.MODULE_NAME, "mouseButton", {
+		name: localize("settings.mouseButton.title"),
+		hint: localize("settings.mouseButton.hint"),
+		config: true,
+		default: "LeftClick",
+		scope: "client",
+		type: <any>MouseButtonBinding,
+	});
+	if (game.user?.hasRole(minMovePermission)) {
+		game.settings.register(CONSTANTS.MODULE_NAME, "mouseButtonMove", {
+			name: localize("settings.mouseButtonMove.title"),
+			hint: localize("settings.mouseButtonMove.hint"),
+			config: true,
+			default: "Shift + LeftClick",
+			scope: "client",
+			type: <any>MouseButtonBinding,
+		});
+	}
+	game.settings.register(CONSTANTS.MODULE_NAME, "mouseButtonDuration", {
+		name: localize("settings.mouseButtonDuration.title"),
+		hint: localize("settings.mouseButtonDuration.hint"),
+		config: true,
+		default: 350,
+		scope: "client",
+		type: Number,
+	});
+	game.settings.register(CONSTANTS.MODULE_NAME, "key", {
+		name: localize("settings.key.title"),
+		hint: localize("settings.key.hint"),
+		config: true,
+		default: "",
+		scope: "client",
+		type: <any>KeyBinding,
+	});
+	if (game.user?.hasRole(minMovePermission)) {
+		game.settings.register(CONSTANTS.MODULE_NAME, "keyMove", {
+			name: localize("settings.keyMove.title"),
+			hint: localize("settings.keyMove.hint"),
+			config: true,
+			default: "",
+			scope: "client",
+			type: <any>KeyBinding,
+		});
+	}
 
 	// =================================================================
-
 
 	game.settings.register(CONSTANTS.MODULE_NAME, "debug", {
 		name: `${CONSTANTS.MODULE_NAME}.setting.debug.name`,

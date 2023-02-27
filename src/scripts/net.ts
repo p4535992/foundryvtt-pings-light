@@ -1,6 +1,6 @@
 import CONSTANTS from "./constants";
 
-const SOCKET_NAME= `module.${CONSTANTS.MODULE_NAME}`;
+const SOCKET_NAME = `module.${CONSTANTS.MODULE_NAME}`;
 
 const callbacks = {};
 
@@ -13,7 +13,7 @@ function messageCallbacks(message) {
 }
 
 function runMessageCallbacks(message, pingData) {
-	messageCallbacks(message).forEach(func => func(pingData));
+	messageCallbacks(message).forEach((func) => func(pingData));
 }
 
 export function initNetwork() {
@@ -26,19 +26,16 @@ export function initNetwork() {
 	});
 }
 
-
 export function onMessageReceived(message, func) {
 	messageCallbacks(message.name).push(func);
 }
 
-
 function emit(...args) {
-	game.socket?.emit(SOCKET_NAME, ...args)
+	game.socket?.emit(SOCKET_NAME, ...args);
 }
 
-
-export function sendMessage(message, pingData):any {
-	message.dataProperties.forEach(prop => {
+export function sendMessage(message, pingData): any {
+	message.dataProperties.forEach((prop) => {
 		if (!pingData.hasOwnProperty(prop)) {
 			throw new Error(`Missing data for message "${message.name}": ${prop}`);
 		}
@@ -46,35 +43,22 @@ export function sendMessage(message, pingData):any {
 	emit({
 		message: message.name,
 		sceneId: canvas.scene?.id,
-		pingData
+		pingData,
 	});
 }
 
-const defaultPingProperties = [
-	'id',
-	'position',
-	'moveCanvas'
-];
+const defaultPingProperties = ["id", "position", "moveCanvas"];
 export const MESSAGES = {
-
-		USER_PING: {
-			name: 'UserPing',
-			dataProperties: [
-				...defaultPingProperties
-			]
-		},
-		TEXT_PING: {
-			name: 'TextPing',
-			dataProperties: [
-				'text',
-				'color',
-				...defaultPingProperties
-			]
-		},
-		REMOVE_PING: {
-			name: 'RemovePing',
-			dataProperties: [
-				'id'
-			]
-		}
+	USER_PING: {
+		name: "UserPing",
+		dataProperties: [...defaultPingProperties],
+	},
+	TEXT_PING: {
+		name: "TextPing",
+		dataProperties: ["text", "color", ...defaultPingProperties],
+	},
+	REMOVE_PING: {
+		name: "RemovePing",
+		dataProperties: ["id"],
+	},
 };

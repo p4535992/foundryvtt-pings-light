@@ -11,7 +11,6 @@ import CONSTANTS from "./scripts/constants";
 import type API from "./scripts/api";
 import { error } from "./scripts/lib/lib";
 
-
 /**
  * This is your TypeScript entry file for Foundry VTT.
  * Register custom settings, sheets, and constants using the Foundry API.

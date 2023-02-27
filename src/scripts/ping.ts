@@ -6,7 +6,6 @@ function getCanvasTextStyle(foundryConfig) {
 	return foundryConfig.tokenTextStyle || foundryConfig.canvasTextStyle;
 }
 
-
 function createPingDisplay(ping, color) {
 	return ping.options.image ? createImagePingDisplay(ping, color) : createDefaultPingDisplay(ping, color);
 }
@@ -18,11 +17,11 @@ function createText(ping, text, color) {
 	const name = new PIXI.Text(text, style);
 	name.anchor.x = 0.5;
 	const maxSizeChange = 1 + (ping.options.sizeChange ? ping.options.sizeChangeAmount : 0);
-	name.y = ping.pingSize / 2 * maxSizeChange;
+	name.y = (ping.pingSize / 2) * maxSizeChange;
 
 	const height = ping.pingSize >= 200 ? 36 : ping.pingSize > 50 ? 24 : 18;
 	const bounds = name.getBounds();
-	const ratio = (bounds.width / bounds.height);
+	const ratio = bounds.width / bounds.height;
 	name.height = height;
 	name.width = height * ratio;
 
@@ -54,7 +53,7 @@ function createPingLines(ping, color) {
 			.lineTo(offset * 0.1, offset * 0.1)
 			.lineTo(0, offset);
 
-		line.rotation = i * Math.PI / 2;
+		line.rotation = (i * Math.PI) / 2;
 
 		lines.push(line);
 	}
@@ -71,7 +70,7 @@ function createPingLines(ping, color) {
 }
 
 function createShadows(ping) {
-	const shadows = createPingLines(ping,0x000000);
+	const shadows = createPingLines(ping, 0x000000);
 	shadows.forEach(addBlurFilter.bind(null, ping));
 	return shadows;
 }
@@ -113,7 +112,7 @@ function animate(ping) {
 	} else if (this.t < mainAnimationEndTime) {
 		ping.scale.x = ping.scale.y = 1;
 		if (ping.options.sizeChange) {
-			const sizeChangeFraction = Math.sin(2 * Math.PI * this.t / (ping.options.sizeChangeSpeed * 1000));
+			const sizeChangeFraction = Math.sin((2 * Math.PI * this.t) / (ping.options.sizeChangeSpeed * 1000));
 			const sizeMultiplier = 1 + sizeChangeFraction * ping.options.sizeChangeAmount;
 			ping.pingDisplay.width = ping.pingDisplay.height = ping.pingSize * sizeMultiplier;
 		}
@@ -125,7 +124,7 @@ function animate(ping) {
 }
 
 function rotationDuringTime(ping, dt) {
-	return 2 * Math.PI * dt / (ping.options.rotateSpeed * 1000);
+	return (2 * Math.PI * dt) / (ping.options.rotateSpeed * 1000);
 }
 
 /**
@@ -156,7 +155,6 @@ function rotationDuringTime(ping, dt) {
  * Adapted from https://gitlab.com/moerills-fvtt-modules/pointer
  */
 export default class Ping extends PIXI.Container {
-
 	/**
 	 *
 	 * @param foundryCanvas
@@ -173,10 +171,11 @@ export default class Ping extends PIXI.Container {
 		this.foundryCanvas = foundryCanvas;
 		this.foundryConfig = foundryConfig;
 
-		this.zIndex = Object.values(foundryCanvas.layers).reduce((highestZIndex, currentLayer) => {
-			const curZIndex = currentLayer.zIndex;
-			return highestZIndex > curZIndex ? highestZIndex : curZIndex;
-		}, 0) + 1;
+		this.zIndex =
+			Object.values(foundryCanvas.layers).reduce((highestZIndex, currentLayer) => {
+				const curZIndex = currentLayer.zIndex;
+				return highestZIndex > curZIndex ? highestZIndex : curZIndex;
+			}, 0) + 1;
 
 		this.x = pos.x;
 		this.y = pos.y;
@@ -204,7 +203,7 @@ export default class Ping extends PIXI.Container {
 
 		super.destroy({
 			...options,
-			children: true
+			children: true,
 		});
 	}
 }

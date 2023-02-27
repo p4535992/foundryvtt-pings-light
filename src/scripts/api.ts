@@ -1,18 +1,18 @@
-import {MESSAGES, sendMessage} from './net.js';
+import { MESSAGES, sendMessage } from "./net.js";
 
 let layer;
 export function initApi(pingsLayer) {
 	layer = pingsLayer;
 	window.Azzu = window.Azzu || {};
-	return window.Azzu.Pings = {
+	return (window.Azzu.Pings = {
 		remove,
 		perform,
 		performText,
 		send,
 		sendText,
 		show,
-		showText
-	}
+		showText,
+	});
 }
 
 function getId() {
@@ -36,7 +36,7 @@ function throwOnUserMissing(userId) {
 
 function throwErrorNoColor(color) {
 	throwErrorNoNumber(color, `color`);
-	if (color < 0 || color > 0xFFFFFF) {
+	if (color < 0 || color > 0xffffff) {
 		throw new Error(`The color is not between 0x000000 and 0xFFFFFF`);
 	}
 }
@@ -57,7 +57,7 @@ export function perform(position, userId = game.user.id, moveCanvas = false) {
 	sendMessage(MESSAGES.USER_PING, {
 		id: userId,
 		position,
-		moveCanvas
+		moveCanvas,
 	});
 	return userId;
 }
@@ -92,7 +92,7 @@ export function send(position, userId = game.user.id, moveCanvas = false) {
 	sendMessage(MESSAGES.USER_PING, {
 		id: userId,
 		position,
-		moveCanvas
+		moveCanvas,
 	});
 	return userId;
 }
@@ -118,7 +118,7 @@ export function performText(position, text, color = DEFAULT_PING_COLOR, moveCanv
 		id,
 		text,
 		color,
-		moveCanvas
+		moveCanvas,
 	});
 	return id;
 }
@@ -162,7 +162,7 @@ export function sendText(position, text, color = DEFAULT_PING_COLOR, moveCanvas 
 		id,
 		text,
 		color,
-		moveCanvas
+		moveCanvas,
 	});
 	return id;
 }
@@ -176,6 +176,6 @@ export function sendText(position, text, color = DEFAULT_PING_COLOR, moveCanvas 
 export function remove(id, removeForOthers = true) {
 	layer.removePing(id);
 	if (removeForOthers) {
-		sendMessage(MESSAGES.REMOVE_PING, {id});
+		sendMessage(MESSAGES.REMOVE_PING, { id });
 	}
 }

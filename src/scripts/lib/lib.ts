@@ -76,9 +76,8 @@ export function dialogWarning(message, icon = "fas fa-exclamation-triangle") {
 
 // =========================================================================================
 
-
 export function localize(key) {
-	return game.i18n.localize(CONSTANTS.PINGS + '.' + key);
+	return game.i18n.localize(CONSTANTS.PINGS + "." + key);
 }
 
 // export async function preRequisitesReady() {
@@ -102,15 +101,15 @@ export function localize(key) {
 export function addNetworkBehavior(pingsGui) {
 	initNetwork();
 
-	onMessageReceived(MESSAGES.USER_PING, ({id, position, moveCanvas}) => {
-		pingsGui.displayUserPing(position, id, moveCanvas)
+	onMessageReceived(MESSAGES.USER_PING, ({ id, position, moveCanvas }) => {
+		pingsGui.displayUserPing(position, id, moveCanvas);
 	});
 
-	onMessageReceived(MESSAGES.TEXT_PING, ({id, position, text, color, moveCanvas}) => {
+	onMessageReceived(MESSAGES.TEXT_PING, ({ id, position, text, color, moveCanvas }) => {
 		pingsGui.displayTextPing(position, id, text, color, moveCanvas);
 	});
 
-	onMessageReceived(MESSAGES.REMOVE_PING, ({id}) => {
+	onMessageReceived(MESSAGES.REMOVE_PING, ({ id }) => {
 		pingsGui.removePing(id);
 	});
 }

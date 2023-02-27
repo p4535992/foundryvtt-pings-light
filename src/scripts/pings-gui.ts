@@ -6,7 +6,7 @@ function isWithinPx(p1, p2, px) {
 	return Math.abs(p1.x - p2.x) <= px && Math.abs(p1.y - p2.y) <= px;
 }
 
-const DEFAULT_PING_COLOR = 0xAAAAAA;
+const DEFAULT_PING_COLOR = 0xaaaaaa;
 
 function getUserColor(user) {
 	return user.color.replace("#", "0x") || DEFAULT_PING_COLOR;
@@ -17,12 +17,12 @@ function getMousePos(foundryCanvas) {
 	const t = foundryCanvas.stage.worldTransform;
 
 	function calcCoord(axis) {
-		return (mouse[axis] - t['t' + axis]) / foundryCanvas.stage.scale[axis];
+		return (mouse[axis] - t["t" + axis]) / foundryCanvas.stage.scale[axis];
 	}
 
 	return {
-		x: calcCoord('x'),
-		y: calcCoord('y')
+		x: calcCoord("x"),
+		y: calcCoord("y"),
 	};
 }
 
@@ -68,7 +68,16 @@ function getMousePos(foundryCanvas) {
  * @param {function(UserPingedCallbackArg)} userPingedCallback
  * @returns {{displayUserPing: displayUserPing, displayTextPing: displayTextPing, removePing: removePing}}
  */
-export default function createPingsGui(window, foundryCanvas, foundryGame, foundryHooks, options, localize, createPing, userPingedCallback = () => <any>{}) {
+export default function createPingsGui(
+	window,
+	foundryCanvas,
+	foundryGame,
+	foundryHooks,
+	options,
+	localize,
+	createPing,
+	userPingedCallback = () => <any>{}
+) {
 	let mouseOnCanvas = false;
 	function onMouseOverStage() {
 		mouseOnCanvas = true;
@@ -78,22 +87,22 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 	}
 	function registerStageListeners() {
 		[
-			['mouseover', onMouseOverStage],
-			['mouseout', onMouseOutStage]
-		].forEach(l => foundryCanvas.stage.on(...l));
+			["mouseover", onMouseOverStage],
+			["mouseout", onMouseOutStage],
+		].forEach((l) => foundryCanvas.stage.on(...l));
 	}
 
 	function isPressed(e, option, bindingType) {
 		const userIsMissingPermission = !option;
 		if (userIsMissingPermission) return false;
 
-		const type = bindingType === 'mouse' ? MouseButtonBinding : KeyBinding;
+		const type = bindingType === "mouse" ? MouseButtonBinding : KeyBinding;
 		return type.eventIsForBinding(e, option);
 	}
 
 	function onKeyDownGlobal(e) {
 		if (!mouseOnCanvas) return;
-		const bindingType = 'keyboard';
+		const bindingType = "keyboard";
 		const shouldPingMove = isPressed(e, options.keyMove, bindingType);
 		const shouldPingNoMove = isPressed(e, options.key, bindingType);
 		if (!shouldPingMove && !shouldPingNoMove) return;
@@ -103,38 +112,41 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 	function addWindowListener(event, listener) {
 		window.addEventListener(event, (e) => {
 			listener(e.originalEvent || e);
-		})
+		});
 	}
 	function onMouseDownGlobal(e) {
 		if (!mouseOnCanvas) return;
-		const bindingType = 'mouse';
+		const bindingType = "mouse";
 		const shouldPingMove = isPressed(e, options.mouseButtonMove, bindingType);
 		const shouldPingNoMove = isPressed(e, options.mouseButton, bindingType);
 		if (!shouldPingMove && !shouldPingNoMove) return;
 
 		const mouseDownStart = getMousePos(foundryCanvas);
-		const mouseDownOption = 'mouseButton' + (shouldPingMove ? 'Move' : '');
+		const mouseDownOption = "mouseButton" + (shouldPingMove ? "Move" : "");
 		const mouseDownTimeout = setTimeout(() => {
 			if (mouseOnCanvas && isWithinPx(mouseDownStart, getMousePos(foundryCanvas), 5)) {
 				triggerPing(shouldPingMove);
 			}
 		}, options.mouseButtonDuration);
-		addWindowListener('mouseup', (e) => {
-			if (!isPressed(e, options[mouseDownOption], 'mouse')) return;
+		addWindowListener(
+			"mouseup",
+			(e) => {
+				if (!isPressed(e, options[mouseDownOption], "mouse")) return;
 
-			clearTimeout(mouseDownTimeout);
-		},
-        //@ts-ignore
-        {once: true});
+				clearTimeout(mouseDownTimeout);
+			},
+			//@ts-ignore
+			{ once: true }
+		);
 	}
 	function registerGlobalListeners() {
 		[
-			['keydown', onKeyDownGlobal],
-			['mousedown', onMouseDownGlobal],
+			["keydown", onKeyDownGlobal],
+			["mousedown", onMouseDownGlobal],
 		].forEach((l) => {
-            //@ts-ignore
-            addWindowListener(...l)
-        });
+			//@ts-ignore
+			addWindowListener(...l);
+		});
 	}
 
 	function registerListeners() {
@@ -143,14 +155,14 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 	}
 
 	function displayPing(ping, moveCanvas = false) {
-		const pos = {x: ping.x, y: ping.y};
+		const pos = { x: ping.x, y: ping.y };
 		if (moveCanvas) {
 			foundryCanvas.animatePan(pos);
 		} else if (foundryCanvas.isOffscreen(pos)) {
 			foundryCanvas.controls.drawOffscreenPing(pos, {
 				style: "arrow",
 				color: ping.color,
-				duration: ping.options.duration * 1000
+				duration: ping.options.duration * 1000,
 			});
 		}
 
@@ -164,11 +176,11 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 	 */
 	function triggerPing(moveCanvas) {
 		let position = getMousePos(foundryCanvas);
-        //@ts-ignore
+		//@ts-ignore
 		userPingedCallback({
 			position: position,
 			id: foundryGame.user?.id,
-			moveCanvas: moveCanvas
+			moveCanvas: moveCanvas,
 		});
 		displayUserPing(position, foundryGame.user.id, moveCanvas);
 	}
@@ -187,7 +199,7 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 		const text = options.showName ? user.name : undefined;
 		const ping = createPing(position, senderId, text, getUserColor(user), options);
 		moveCanvas = moveCanvas && user.hasRole(options.minMovePermission);
-		displayPing(ping, moveCanvas)
+		displayPing(ping, moveCanvas);
 	}
 
 	/**
@@ -209,35 +221,44 @@ export default function createPingsGui(window, foundryCanvas, foundryGame, found
 	}
 
 	function disableFoundryPings() {
-        //@ts-ignore
-		libWrapper.register(Constants.PINGS, 'ControlsLayer.prototype._onLongPress', () => {}, 'OVERRIDE');
-        //@ts-ignore
-		libWrapper.register(Constants.PINGS, 'KeybindingsConfig.prototype._addMouseControlsReference', (wrapped, ...args) => {
-			wrapped(...args);
-			const categories = args[0];
-			const coreMouseCategoryData = categories.get("core-mouse");
-			coreMouseCategoryData.actions
-				.filter(action => action.id.startsWith(`canvas-ping`))
-				.forEach(action => action.bindings = [{
-					display: localize(`settings.handledByPings`),
-					cssClasses: "uneditable",
-					isEditable: false,
-					hasConflicts: false,
-					isFirst: false
-				}]);
-			console.log(coreMouseCategoryData)
-		}, 'MIXED');
+		//@ts-ignore
+		libWrapper.register(Constants.PINGS, "ControlsLayer.prototype._onLongPress", () => {}, "OVERRIDE");
+		//@ts-ignore
+		libWrapper.register(
+			Constants.PINGS,
+			"KeybindingsConfig.prototype._addMouseControlsReference",
+			(wrapped, ...args) => {
+				wrapped(...args);
+				const categories = args[0];
+				const coreMouseCategoryData = categories.get("core-mouse");
+				coreMouseCategoryData.actions
+					.filter((action) => action.id.startsWith(`canvas-ping`))
+					.forEach(
+						(action) =>
+							(action.bindings = [
+								{
+									display: localize(`settings.handledByPings`),
+									cssClasses: "uneditable",
+									isEditable: false,
+									hasConflicts: false,
+									isFirst: false,
+								},
+							])
+					);
+				console.log(coreMouseCategoryData);
+			},
+			"MIXED"
+		);
 	}
 
 	disableFoundryPings();
 	registerListeners();
 	// when canvas is drawn again, the listeners to the stage get cleared, so register them again
-	foundryHooks.on('canvasReady', () => registerStageListeners());
+	foundryHooks.on("canvasReady", () => registerStageListeners());
 
 	return {
 		displayTextPing,
 		displayUserPing,
-		removePing
-	}
+		removePing,
+	};
 }
-
