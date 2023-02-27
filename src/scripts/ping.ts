@@ -45,9 +45,9 @@ function createDefaultPingDisplay(ping, color) {
 
 function createPingLines(ping, color) {
 	let offset = ping.pingSize * 0.25;
-	const lines = [];
+	const lines = <any[]>[];
 	for (let i = 0; i < 4; i++) {
-		let line = new PIXI.Graphics();
+		let line: any = new PIXI.Graphics();
 		line.lineStyle(2, color, 1)
 			.moveTo(offset, 0)
 			.lineTo(offset * 0.1, offset * 0.1)
@@ -155,6 +155,16 @@ function rotationDuringTime(ping, dt) {
  * Adapted from https://gitlab.com/moerills-fvtt-modules/pointer
  */
 export default class Ping extends PIXI.Container {
+	foundryCanvas: Canvas;
+	foundryConfig: any;
+
+	id: string;
+	color: string;
+	options: any;
+	pingSize: number;
+	pingDisplay: any;
+	_animateFunc: any;
+
 	/**
 	 *
 	 * @param foundryCanvas
@@ -172,8 +182,8 @@ export default class Ping extends PIXI.Container {
 		this.foundryConfig = foundryConfig;
 
 		this.zIndex =
-			Object.values(foundryCanvas.layers).reduce((highestZIndex, currentLayer) => {
-				const curZIndex = currentLayer.zIndex;
+			Object.values(foundryCanvas.layers).reduce((highestZIndex: number, currentLayer: any) => {
+				const curZIndex = <number>currentLayer.zIndex;
 				return highestZIndex > curZIndex ? highestZIndex : curZIndex;
 			}, 0) + 1;
 
@@ -199,7 +209,7 @@ export default class Ping extends PIXI.Container {
 	}
 
 	destroy(options) {
-		this.foundryCanvas.app.ticker.remove(this._animateFunc, this);
+		this.foundryCanvas.app?.ticker.remove(this._animateFunc, this);
 
 		super.destroy({
 			...options,

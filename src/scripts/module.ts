@@ -1,4 +1,4 @@
-import { initApi } from "./api";
+import API from "./api";
 import { addNetworkBehavior, localize } from "./lib/lib";
 import { sendMessage, MESSAGES } from "./net";
 import Ping from "./ping";
@@ -21,9 +21,11 @@ export const readyHooks = async () => {
 		localize,
 		//@ts-ignore
 		(...args) => new Ping(canvas, CONFIG, ...args),
+		//@ts-ignore
 		sendMessage.bind(null, MESSAGES.USER_PING)
 	);
 	addNetworkBehavior(pingsGui);
-	const api = initApi(pingsGui);
-	Hooks.callAll("pingsReady", api);
+	// const api = initApi(pingsGui);
+	API.layer = pingsGui;
+	Hooks.callAll("pingsReady", API);
 };

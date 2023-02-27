@@ -1,4 +1,4 @@
-import Constants from '../constants.js';
+import Constants from '../CONSTANTS.js';
 
 export const MigrationResult = {
 	UNNECESSARY: 0,
@@ -15,11 +15,11 @@ function createMigrations(foundryGame) {
 					return MigrationResult.UNNECESSARY;
 				}
 
-				if (foundryGame.settings.get(Constants.PINGS, Constants.MINIMUM_PERMISSION) === 0) {
-					await foundryGame.settings.set(Constants.PINGS, Constants.MINIMUM_PERMISSION, 1);
+				if (foundryGame.settings.get(CONSTANTS.PINGS, CONSTANTS.MINIMUM_PERMISSION) === 0) {
+					await foundryGame.settings.set(CONSTANTS.PINGS, CONSTANTS.MINIMUM_PERMISSION, 1);
 				}
 
-				await foundryGame.settings.set(Constants.PINGS, Constants.LAST_VERSION, '1.2.2');
+				await foundryGame.settings.set(CONSTANTS.PINGS, CONSTANTS.LAST_VERSION, '1.2.2');
 				return MigrationResult.SUCCESS;
 			}
 		}
@@ -28,14 +28,14 @@ function createMigrations(foundryGame) {
 
 export async function migrate(foundryGame) {
 	try {
-		foundryGame.settings.register(Constants.PINGS, 'lastVersion', {
+		foundryGame.settings.register(CONSTANTS.PINGS, 'lastVersion', {
 			config: false,
 			scope: 'client',
 			type: String,
 			default: ''
 		});
 		let finalResult = undefined;
-		let lastVersion = foundryGame.settings.get(Constants.PINGS, Constants.LAST_VERSION);
+		let lastVersion = foundryGame.settings.get(CONSTANTS.PINGS, CONSTANTS.LAST_VERSION);
 		for (const migration of createMigrations(foundryGame)) {
 			const result = await migration.func(lastVersion);
 			if (result === MigrationResult.FAILED) {

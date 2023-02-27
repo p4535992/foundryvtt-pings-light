@@ -6,7 +6,7 @@
 // import Constants from './scripts/constants';
 
 import { initHooks, readyHooks, setupHooks } from "./scripts/module";
-import { registerSettings } from "./scripts/settings";
+import { registerSettings } from "./scripts/settings/settings";
 import CONSTANTS from "./scripts/constants";
 import type API from "./scripts/api";
 import { error } from "./scripts/lib/lib";

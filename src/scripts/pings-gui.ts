@@ -1,15 +1,16 @@
 // import {MouseButtonBinding, KeyBinding} from '../settings-extender/settings-extender.js';
-// import Constants from './constants.js';
+// import Constants from './CONSTANTS.js';
+import CONSTANTS from "./constants";
 import { KeyBinding, MouseButtonBinding } from "./lib/settings-extender-light";
 
 function isWithinPx(p1, p2, px) {
 	return Math.abs(p1.x - p2.x) <= px && Math.abs(p1.y - p2.y) <= px;
 }
 
-const DEFAULT_PING_COLOR = 0xaaaaaa;
+// const DEFAULT_PING_COLOR = 0xaaaaaa;
 
 function getUserColor(user) {
-	return user.color.replace("#", "0x") || DEFAULT_PING_COLOR;
+	return user.color.replace("#", "0x") || CONSTANTS.DEFAULT_PING_COLOR;
 }
 
 function getMousePos(foundryCanvas) {
@@ -222,10 +223,10 @@ export default function createPingsGui(
 
 	function disableFoundryPings() {
 		//@ts-ignore
-		libWrapper.register(Constants.PINGS, "ControlsLayer.prototype._onLongPress", () => {}, "OVERRIDE");
+		libWrapper.register(CONSTANTS.PINGS, "ControlsLayer.prototype._onLongPress", () => {}, "OVERRIDE");
 		//@ts-ignore
 		libWrapper.register(
-			Constants.PINGS,
+			CONSTANTS.PINGS,
 			"KeybindingsConfig.prototype._addMouseControlsReference",
 			(wrapped, ...args) => {
 				wrapped(...args);
