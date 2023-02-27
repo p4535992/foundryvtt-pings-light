@@ -1,0 +1,25 @@
+image: alpine
+
+before_script:
+  - apk update
+  - apk add zip
+  - apk add jq
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - chmod +x build/build.sh
+    - ./build/build.sh
+  artifacts:
+    name: pings
+    when: on_success
+    paths:
+      - dist/pings.zip
+      - dist/pings/module.json
+  when: on_success
+  only:
+    - tags
+    - master
