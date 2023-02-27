@@ -1,3 +1,4 @@
+import { setApi } from "../main";
 import API from "./api";
 import { addNetworkBehavior, localize } from "./lib/lib";
 import { sendMessage, MESSAGES } from "./net";

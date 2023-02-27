@@ -191,6 +191,7 @@ export const registerSettings = function () {
 			choices[val] = permission;
 			return choices;
 		}, {});
+		
 	game.settings.register(CONSTANTS.MODULE_NAME, CONSTANTS.MINIMUM_PERMISSION, {
 		name: localize("settings.minMovePermission.title"),
 		hint: localize("settings.minMovePermission.hint"),
@@ -312,7 +313,7 @@ export const registerSettings = function () {
 		name: localize("settings.key.title"),
 		hint: localize("settings.key.hint"),
 		config: true,
-		default: "",
+		default: {},
 		scope: "client",
 		type: <any>KeyBinding,
 	});
@@ -321,7 +322,7 @@ export const registerSettings = function () {
 			name: localize("settings.keyMove.title"),
 			hint: localize("settings.keyMove.hint"),
 			config: true,
-			default: "",
+			default: {},
 			scope: "client",
 			type: <any>KeyBinding,
 		});

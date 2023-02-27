@@ -9,7 +9,10 @@ import { initHooks, readyHooks, setupHooks } from "./scripts/module";
 import { registerSettings } from "./scripts/settings/settings";
 import CONSTANTS from "./scripts/constants";
 import type API from "./scripts/api";
-import { error } from "./scripts/lib/lib";
+import { addNetworkBehavior, error, localize } from "./scripts/lib/lib";
+import { sendMessage } from "./scripts/net";
+import createPingsGui from "./scripts/pings-gui";
+import Ping from "./scripts/ping";
 
 /**
  * This is your TypeScript entry file for Foundry VTT.
@@ -28,19 +31,21 @@ import { error } from "./scripts/lib/lib";
 
 /*
 (async () => {
-	const [Settings] = await preRequisitesReady();
+	// const [Settings] = await preRequisitesReady();
 	const pingsGui = createPingsGui(window,
 		canvas,
 		game,
 		Hooks,
 		Settings,
 		localize,
+		//@ts-ignore
 		(...args) => new Ping(canvas, CONFIG, ...args),
+		//@ts-ignore
 		sendMessage.bind(null, MESSAGES.USER_PING)
 	);
 	addNetworkBehavior(pingsGui);
-	const api = initApi(pingsGui);
-	Hooks.callAll('pingsReady', api);
+	// const api = initApi(pingsGui);
+	// Hooks.callAll('pingsReady', api);
 })();
 */
 
