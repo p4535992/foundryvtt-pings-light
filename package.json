@@ -2,7 +2,7 @@
   "name": "mountup",
   "title": "Pings",
   "description": "Click and hold with a mouse button or press a keyboard key to perform a ping.",
-  "version": "4.0.0",
+  "version": "1.5.0",
   "main": "main.js",
   "scripts": {
     "publish": "gulp publish --update",
